@@ -1,9 +1,9 @@
-defmodule Hangman.MixProject do
+defmodule BreakoutPong.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :hangman,
+      app: :breakout_pong,
       version: "0.1.0",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -18,7 +18,7 @@ defmodule Hangman.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Hangman.Application, []},
+      mod: {BreakoutPong.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end

@@ -1,4 +1,4 @@
-# Hangman
+# BreakoutPong
 
 To start your Phoenix server:
 
