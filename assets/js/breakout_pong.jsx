@@ -20,6 +20,7 @@ class BreakoutPong extends React.Component {
 
     this.channel = props.channel;
     this.state = {
+      isLobby: false,
       skel: [],
       goods: [],
       bads: [],
@@ -50,28 +51,55 @@ class BreakoutPong extends React.Component {
     return _.concat(this.state.goods, this.state.bads);
   }
 
-  render() {
+  renderLobby() {
     return (
-      <div>
-        <div className="row">
-          <div className="column">
-            <Word skeleton={this.state.skel} />
-          </div>
-          <div className="column">
-            <Lives lives={this.lives_left()} max={this.state.lives} />
-          </div>
-        </div>
-        <div className="row">
-          <div className="column">
-            <Guesses guesses={this.state.bads} />
-          </div>
-          <div className="column">
-            <GuessInput guesses={this.guesses()}
-                        on_guess={this.on_guess.bind(this)} />
+      <div class="row">
+        <div class="column">
+          <p>Players:</p>
+          <div id="playerList">
+            <p> Loading players...</p>
           </div>
         </div>
       </div>
     );
+  }
+
+  render() {
+    if (this.state.isLobby) {
+      return (
+        <div className="row">
+          <div className="column">
+            <p>Players:</p>
+            <div id="playerList">
+              <p> Loading players...</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    else {
+      return (
+        <div>
+          <div className="row">
+            <div className="column">
+              <Word skeleton={this.state.skel} />
+            </div>
+            <div className="column">
+              <Lives lives={this.lives_left()} max={this.state.lives} />
+            </div>
+          </div>
+          <div className="row">
+            <div className="column">
+              <Guesses guesses={this.state.bads} />
+            </div>
+            <div className="column">
+              <GuessInput guesses={this.guesses()}
+                          on_guess={this.on_guess.bind(this)} />
+            </div>
+          </div>
+        </div>
+      );
+    }
   }
 }
 
@@ -107,4 +135,3 @@ function GuessInput(params) {
     <p><input type="text" value={guesses.join('')} onChange={on_guess} /></p>
   </div>;
 }
-

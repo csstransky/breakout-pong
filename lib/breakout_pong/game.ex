@@ -1,6 +1,7 @@
 defmodule BreakoutPong.Game do
   def new do
     %{
+      isLobby: true,
       word: next_word(),
       guesses: [],
     }
@@ -10,6 +11,7 @@ defmodule BreakoutPong.Game do
     ws = String.graphemes(game.word)
     gs = game.guesses
     %{
+      isLobby: game.isLobby,
       skel: skeleton(ws, gs),
       goods: Enum.filter(gs, &(Enum.member?(ws, &1))),
       bads: Enum.filter(gs, &(!Enum.member?(ws, &1))),
