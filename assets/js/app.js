@@ -16,6 +16,7 @@ import $ from "jquery";
 //
 // Local files can be imported directly using relative paths, for example:
 import socket from "./socket";
+console.log(socket)
 import breakout_pong_init from "./breakout_pong";
 
 $(() => {
@@ -24,9 +25,16 @@ $(() => {
     let channel = socket.channel("games:" + window.gameName, {});
     breakout_pong_init(root, channel);
   }
+
   let playerList = document.getElementById('playerList');
   if (playerList) {
-    let channel = socket.channel("games:" + window.gameName, {});
-    breakout_pong_init(root, channel);
+    let channel = socket.channel("lobby:" + window.gameName, {});
+    breakout_pong_init(playerList, channel);
   }
 });
+
+
+
+
+
+
