@@ -18,6 +18,7 @@ import $ from "jquery";
 import socket from "./socket";
 console.log(socket)
 import breakout_pong_init from "./breakout_pong";
+import lobby_init from "./lobby";
 
 $(() => {
   let root = document.getElementById('root');
@@ -29,7 +30,7 @@ $(() => {
   let playerList = document.getElementById('playerList');
   if (playerList) {
     let channel = socket.channel("lobby:" + window.gameName, {});
-    breakout_pong_init(playerList, channel);
+    lobby_init(playerList, channel);
   }
 });
 

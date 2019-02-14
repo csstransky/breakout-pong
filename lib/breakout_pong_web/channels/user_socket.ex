@@ -4,6 +4,7 @@ defmodule BreakoutPongWeb.UserSocket do
   ## Channels
   # channel "room:*", BreakoutPongWeb.RoomChannel
   channel "games:*", BreakoutPongWeb.GamesChannel
+  channel "lobby:*", BreakoutPongWeb.LobbyChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After

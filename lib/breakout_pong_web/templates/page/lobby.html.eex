@@ -1,9 +1,8 @@
+
 <div class="row">
   <div class="column">
     <h1>Lobby Game: <%= @gameName %></h1>
     <p>Players:<p>
-    <div id="playerList">
-      <p>Where stuff is supposed to go</p>
-    </div>
+    <div id="playerList"> <p> Loading players...</p></div>
   </div>
 </div>
