@@ -1,6 +1,10 @@
 <div class="row">
   <div class="column">
     <h1 id="index-page">Join a Game</h1>
-    <p><a href="/game/demo">Join "demo"</a></p>
+    <form action="/lobby/" method="get">
+      <input type="text" name="gameName"><br>
+      <input type="text" name="playerName"><br>
+      <input type="submit" value="submit">
+    </form>
   </div>
 </div>
