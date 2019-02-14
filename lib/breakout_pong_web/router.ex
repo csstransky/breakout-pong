@@ -18,6 +18,7 @@ defmodule BreakoutPongWeb.Router do
 
     get "/", PageController, :index
     post "/lobby", PageController, :lobby
+    post "/game", PageController, :game
   end
 
   # Other scopes may use custom stacks.

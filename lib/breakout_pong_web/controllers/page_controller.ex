@@ -1,8 +1,8 @@
 defmodule BreakoutPongWeb.PageController do
   use BreakoutPongWeb, :controller
 
-  def game(conn, %{"name" => name}) do
-    render conn, "game.html", name: name
+  def game(conn, %{"gameName" => gameName}) do
+    render conn, "game.html", gameName: gameName
   end
 
   def lobby(conn, %{"gameName" => gameName, "playerName" => playerName}) do

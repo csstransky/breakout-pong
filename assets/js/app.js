@@ -24,10 +24,9 @@ $(() => {
     let channel = socket.channel("games:" + window.gameName, {});
     breakout_pong_init(root, channel);
   }
+  let playerList = document.getElementById('playerList');
+  if (playerList) {
+    let channel = socket.channel("games:" + window.gameName, {});
+    breakout_pong_init(root, channel);
+  }
 });
-
-
-
-
-
-
