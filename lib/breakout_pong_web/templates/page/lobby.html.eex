@@ -1,6 +1,6 @@
 <div class="row">
   <div class="column">
-    <h1>Lobby Game: <%= @name %></h1>
+    <h1>Lobby Game: <%= @gameName %></h1>
     <p>Players:<p>
     <div id="playerList">
       <p>Where stuff is supposed to go</p>
