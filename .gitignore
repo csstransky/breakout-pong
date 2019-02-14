@@ -45,3 +45,8 @@ npm-debug.log
 .elixir_ls/
 /.elixir_ls/
 /.elix*
+
+# For Bryce's stuff
+.idea/
+/.id*
+*.iml
