@@ -1,16 +1,9 @@
-<script>
-  window.gameName = "<%= @gameName %>";
-</script>
-
 <div class="row">
   <div class="column">
     <h1>Lobby Game: <%= @name %></h1>
     <p>Players:<p>
     <div id="playerList">
-
+      <p>Where stuff is supposed to go</p>
     </div>
-    <form action="/lobby/:gameName" method="get">
-      <input type="submit" value="submit">
-    </form>
   </div>
 </div>

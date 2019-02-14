@@ -1,10 +1,10 @@
 <div class="row">
   <div class="column">
     <h1 id="index-page">Join a Game</h1>
-    <form action="/lobby/" method="get">
-      <input type="text" name="gameName"><br>
-      <input type="text" name="playerName"><br>
-      <input type="submit" value="submit">
-    </form>
+    <%= form_for @conn, "/lobby", fn func -> %>
+      <p>Enter game name: <%= text_input func, :gameName %></p>
+      <p>Enter player name: <%= text_input func, :playerName %></p>
+      <p><%= submit "Join Game" %></p>
+    <% end %>
   </div>
 </div>
