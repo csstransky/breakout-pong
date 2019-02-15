@@ -3,33 +3,42 @@ import ReactDOM from 'react-dom';
 import _ from "lodash";
 
 export default function breakout_pong_init(root, channel) {
-  ReactDOM.render(<BreakoutPong channel={channel} />, root);
+    ReactDOM.render(<BreakoutPong channel={channel} />, root);
 }
 
 // Client-Side state for BreakoutPong is:
 // {
-//    skel:  List of letters and _ indicating where good guesses go.
-//    goods: Set of letters, good guesses
-//    bads:  Set of letters, bad guesses
-//    lives: Int               // initial lives
+//    TODO: add some documentation
 // }
-
 class BreakoutPong extends React.Component {
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-    this.channel = props.channel;
-    this.state = {
-      isLobby: false,
-      lobbyList: ["Loading..."],
-      player1: "",
-      player2: "",
-      skel: [],
-      goods: [],
-      bads: [],
-      lives: 10,
-    };
+        this.channel = props.channel;
+        this.state = {
+            ballx: 100,
+            bally: 100,
+            ballSpeed: 2,
+            velx: 1,
+            vely: 1,
+            player1x: 670,
+            player1y: 100,
+            player2x: 10,
+            player2y: 100,
+            player1score: 0,
+            player2score: 0,
+            height: 600,
+            width: 700,
+            upArrow: 38,
+            downArrow: 40,
+            paddleHeight: 100,
+            paddleWidth: 20,
+            paddleSpeed: 5,
+            ballSize: 10,
+            loop: false,
+        };
 
+<<<<<<< HEAD
     this.channel
         .join()
         .receive("ok", this.got_view.bind(this))
@@ -40,25 +49,28 @@ class BreakoutPong extends React.Component {
       this.setState(resp)
     });
   }
+=======
+        this.channel
+            .join()
+            .receive("ok", this.got_view.bind(this))
+            .receive("error", resp => { console.log("Unable to join", resp); });
+    }
+>>>>>>> e2676a1847ed40a7f0b3b6edee92101285b580e3
 
-  got_view(view) {
-    console.log("new view", view);
-    this.setState(view.game);
-  }
 
-  lives_left() {
-    return this.state.lives - this.state.bads.length;
-  }
+    got_view(view) {
+        console.log("new view", view);
+        this.setState(view.game);
+    }
 
-  on_guess(ev) {
-    this.channel.push("guess", { letter: ev.target.value.substr(-1) })
-        .receive("ok", this.got_view.bind(this));
-  }
+    initialize_game() {
+        this.channel.push("restart")
+            .receive("ok", this.got_view.bind(this))
+    }
 
-  guesses() {
-    return _.concat(this.state.goods, this.state.bads);
-  }
+    render() {
 
+<<<<<<< HEAD
   render() {
     if (this.state.isLobby) {
       return (
@@ -115,26 +127,22 @@ function Word(params) {
     </div>
   );
 }
+=======
+        let canvas = document.createElement('CANVAS');
+        canvas.height = 150;
+        canvas.width = 170;
 
-function Lives(params) {
-  let {lives, max} = params;
-  return <div>
-    <p><b>Guesses Left:</b></p>
-    <p>{lives} / {max}</p>
-  </div>;
+        let player1 = canvas.getContext("2d");
+        player1.fillStyle = '#FF0000';
+        player1.fillRect(10, 10, 20, 100);
+
+>>>>>>> e2676a1847ed40a7f0b3b6edee92101285b580e3
+
+        return (
+            <div dangerouslySetInnerHTML={{ __html: canvas.outerHTML}}/>
+              )
+
+    }
+
 }
 
-function Guesses(params) {
-  return <div>
-    <p><b>Letters Guessed</b></p>
-    <p>{params.guesses.sort().join(' ')}</p>
-  </div>;
-}
-
-function GuessInput(params) {
-  let {guesses, on_guess} = params;
-  return <div>
-    <p><b>Type Your Guesses</b></p>
-    <p><input type="text" value={guesses.join('')} onChange={on_guess} /></p>
-  </div>;
-}
