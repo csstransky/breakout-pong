@@ -22,7 +22,7 @@ import breakout_pong_init from "./breakout_pong";
 $(() => {
   let root = document.getElementById('root');
   if (root) {
-    let channel = socket.channel("games:" + window.gameName, {});
+    let channel = socket.channel("games:" + window.gameName, {user: window.playerName});
     breakout_pong_init(root, channel);
   }
 });

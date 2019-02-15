@@ -18,8 +18,8 @@ defmodule BreakoutPong.GameServer do
   def start_link(name) do
     # Will have to change this later so it doesn't create a new game if the game
     # exists, but the player doesn't
-    game = BreakoutPong.BackupAgent.get(name, player) || BreakoutPong.Game.new()
-    IO.inspect(BreakoutPong.BackAgent.get(name, player))
+    game = BreakoutPong.BackupAgent.get(name) || BreakoutPong.Game.new()
+    IO.inspect(BreakoutPong.BackAgent.get(name))
     GenServer.start_link(__MODULE__, game, name: reg(name))
   end
 
@@ -37,7 +37,7 @@ defmodule BreakoutPong.GameServer do
 
   def handle_call({:guess, name, letter}, _from, game) do
     game = BreakoutPong.Game.guess(game, letter)
-    BreakoutPong.BackupAgent.put(name, player, game)
+    BreakoutPong.BackupAgent.put(name, game)
     {:reply, game, game}
   end
 
