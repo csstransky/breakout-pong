@@ -21,6 +21,9 @@ class BreakoutPong extends React.Component {
     this.channel = props.channel;
     this.state = {
       isLobby: false,
+      lobbyList: ["Loading..."],
+      player1: "",
+      player2: "",
       skel: [],
       goods: [],
       bads: [],

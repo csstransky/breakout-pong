@@ -9,6 +9,7 @@ defmodule BreakoutPongWeb.GamesChannel do
       game = BackupAgent.get(name) || Game.new()
       player = Map.get(payload, :user)
       BackupAgent.put(name, game)
+      IO.inspect(BackupAgent.get(name))
       socket = socket
       |> assign(:player, player)
       |> assign(:game, game)

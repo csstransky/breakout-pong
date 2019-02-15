@@ -41,6 +41,12 @@ defmodule BreakoutPong.GameServer do
     {:reply, game, game}
   end
 
+  def handle_call({:join_lobby, name, player}, _from, game) do
+    game = BreakoutPong.Game.add_to_lobby(game, player)
+    BreakoutPong.BackupAgent.put(name, game)
+    {:reply, game, game}
+  end
+
   def handle_call({:peek, _name}, _from, game) do
     {:reply, game, game}
   end
