@@ -17,7 +17,7 @@ defmodule BreakoutPongWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    post "/game/:gameName", PageController, :game
+    post "/game", PageController, :game
   end
 
   # Other scopes may use custom stacks.

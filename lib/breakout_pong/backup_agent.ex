@@ -8,15 +8,15 @@ defmodule BreakoutPong.BackupAgent do
     Agent.start_link(fn -> %{} end, name: __MODULE__)
   end
 
-  def put(name, val) do
+  def put(name, player, game) do
     Agent.update __MODULE__, fn state ->
-      Map.put(state, name, val)
+      Map.put(state, name, player, game)
     end
   end
 
-  def get(name) do
+  def get(name, player) do
     Agent.get __MODULE__, fn state ->
-      Map.get(state, name)
+      Map.get(state, name, player)
     end
   end
 end

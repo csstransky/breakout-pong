@@ -6,8 +6,8 @@ defmodule BreakoutPongWeb.GamesChannel do
 
   def join("games:" <> name, payload, socket) do
     if authorized?(payload) do
-      game = BackupAgent.get(name) || Game.new()
-      BackupAgent.put(name, game)
+      game = BackupAgent.get(name, "test") || Game.new()
+      BackupAgent.put(name, "test", game)
       socket = socket
       |> assign(:game, game)
       |> assign(:name, name)
