@@ -38,7 +38,6 @@ class BreakoutPong extends React.Component {
             loop: false,
         };
 
-<<<<<<< HEAD
     this.channel
         .join()
         .receive("ok", this.got_view.bind(this))
@@ -49,13 +48,6 @@ class BreakoutPong extends React.Component {
       this.setState(resp)
     });
   }
-=======
-        this.channel
-            .join()
-            .receive("ok", this.got_view.bind(this))
-            .receive("error", resp => { console.log("Unable to join", resp); });
-    }
->>>>>>> e2676a1847ed40a7f0b3b6edee92101285b580e3
 
 
     got_view(view) {
@@ -69,45 +61,33 @@ class BreakoutPong extends React.Component {
     }
 
     render() {
+      if (this.state.isLobby) {
+        return (
+          <div className="row">
+            <div className="column">
+              <p>Players:</p>
+              <div id="playerList">
+                <LobbyList lobbyList={this.state.lobbyList} />
+              </div>
+            </div>
+          </div>
+        );
+      }
+      else {
+        let canvas = document.createElement('CANVAS');
+        canvas.height = 150;
+        canvas.width = 170;
 
-<<<<<<< HEAD
-  render() {
-    if (this.state.isLobby) {
-      return (
-        <div className="row">
-          <div className="column">
-            <p>Players:</p>
-            <div id="playerList">
-              <LobbyList lobbyList={this.state.lobbyList} />
-            </div>
-          </div>
-        </div>
-      );
+        let player1 = canvas.getContext("2d");
+        player1.fillStyle = '#FF0000';
+        player1.fillRect(10, 10, 20, 100);
+
+
+        return (
+          <div dangerouslySetInnerHTML={{ __html: canvas.outerHTML}}/>
+        )
+      }
     }
-    else {
-      return (
-        <div>
-          <div className="row">
-            <div className="column">
-              <Word skeleton={this.state.skel} />
-            </div>
-            <div className="column">
-              <Lives lives={this.lives_left()} max={this.state.lives} />
-            </div>
-          </div>
-          <div className="row">
-            <div className="column">
-              <Guesses guesses={this.state.bads} />
-            </div>
-            <div className="column">
-              <GuessInput guesses={this.guesses()}
-                          on_guess={this.on_guess.bind(this)} />
-            </div>
-          </div>
-        </div>
-      );
-    }
-  }
 }
 
 function LobbyList({lobbyList}) {
@@ -117,32 +97,3 @@ function LobbyList({lobbyList}) {
     </div>;
   });
 }
-
-function Word(params) {
-  let {skeleton} = params;
-  return (
-    <div>
-      <p><b>The Word</b></p>
-      <p>{skeleton.join(" ")}</p>
-    </div>
-  );
-}
-=======
-        let canvas = document.createElement('CANVAS');
-        canvas.height = 150;
-        canvas.width = 170;
-
-        let player1 = canvas.getContext("2d");
-        player1.fillStyle = '#FF0000';
-        player1.fillRect(10, 10, 20, 100);
-
->>>>>>> e2676a1847ed40a7f0b3b6edee92101285b580e3
-
-        return (
-            <div dangerouslySetInnerHTML={{ __html: canvas.outerHTML}}/>
-              )
-
-    }
-
-}
-

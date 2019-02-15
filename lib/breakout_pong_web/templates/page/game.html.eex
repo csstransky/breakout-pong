@@ -6,10 +6,7 @@
 <div class="row">
   <div class="column">
     <h1>BreakoutPong Game: <%= @gameName %></h1>
-<<<<<<< HEAD
     <h3>Player Name: <%= @playerName %></h3>
-=======
->>>>>>> e2676a1847ed40a7f0b3b6edee92101285b580e3
     <div id="root">
       React component loading...
     </div>
