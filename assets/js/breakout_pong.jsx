@@ -34,6 +34,11 @@ class BreakoutPong extends React.Component {
         .join()
         .receive("ok", this.got_view.bind(this))
         .receive("error", resp => { console.log("Unable to join", resp); });
+
+    this.channel.on("update", resp => {
+      console.log(resp)
+      this.setState(resp)
+    });
   }
 
   got_view(view) {
@@ -54,19 +59,6 @@ class BreakoutPong extends React.Component {
     return _.concat(this.state.goods, this.state.bads);
   }
 
-  renderLobby() {
-    return (
-      <div class="row">
-        <div class="column">
-          <p>Players:</p>
-          <div id="playerList">
-            <p> Loading players...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   render() {
     if (this.state.isLobby) {
       return (
@@ -74,7 +66,7 @@ class BreakoutPong extends React.Component {
           <div className="column">
             <p>Players:</p>
             <div id="playerList">
-              <p> Loading players...</p>
+              <LobbyList lobbyList={this.state.lobbyList} />
             </div>
           </div>
         </div>
@@ -104,6 +96,14 @@ class BreakoutPong extends React.Component {
       );
     }
   }
+}
+
+function LobbyList({lobbyList}) {
+  return _.map(lobbyList, (player, rowNum) => {
+    return <div className="row" key={rowNum}>
+      <p>{player}</p>
+    </div>;
+  });
 }
 
 function Word(params) {

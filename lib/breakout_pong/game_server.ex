@@ -35,6 +35,11 @@ defmodule BreakoutPong.GameServer do
     {:ok, game}
   end
 
+  def join_lobby(name, player) do
+    game = BreakoutPong.BackupAgent.get(name) || BreakoutPong.Game.new()
+    GenServer
+  end
+
   def handle_call({:guess, name, letter}, _from, game) do
     game = BreakoutPong.Game.guess(game, letter)
     BreakoutPong.BackupAgent.put(name, game)

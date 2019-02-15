@@ -26,13 +26,21 @@ defmodule BreakoutPong.Game do
   end
 
   def add_to_lobby(game, player) do
-    game
-    |> Map.put(:lobbyList, game.lobbyList ++ [player])
+    if Enum.member?(game.lobbyList, player) do
+      game
+    else
+      game
+      |> Map.put(:lobbyList, game.lobbyList ++ [player])
+    end
   end
 
   def remove_from_lobby(game, player) do
-    game
-    |> Map.put(:lobbyList, List.delete(game.lobbyList, player))
+    if Enum.member?(game.lobbyList, player) do
+      game
+      |> Map.put(:lobbyList, game.lobbyList ++ [player])
+    else
+      game
+    end
   end
 
   def skeleton(word, guesses) do
