@@ -58,13 +58,24 @@ defmodule BreakoutPong.Game do
     x
   end
 
-  def key_pressed(game, key) do
-    x = Map.get(game, :player1y)
-    if key == "up" do
-      Map.put(game, :player1y, x + 20)
+  def key_pressed(game, key, player) do
+    if player = Map.get(game, :player1) do
+      x = Map.get(game, :player1y)
+      if key == "up" do
+        Map.put(game, :player1y, x + 20)
       else
-      Map.put(game, :player1y, x - 20)
-  end
+        Map.put(game, :player1y, x - 20)
+      end
+    end
+
+    if player = Map.get(game, :player2) do
+      x = Map.get(game, :player2y)
+      if key == "down" do
+        Map.put(game, :player2y, x + 20)
+      else
+        Map.put(game, :player2y, x - 20)
+      end
+    end
   end
 
 
