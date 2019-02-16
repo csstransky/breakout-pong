@@ -60,6 +60,13 @@ class BreakoutPong extends React.Component {
             .receive("ok", this.got_view.bind(this))
     }
 
+    startGame() {
+      console.log("wer>?");
+      console.log(this.state.isLobby);
+      this.state.isLobby = false;
+      this.setState(this.state);
+    }
+
     render() {
       if (this.state.isLobby) {
         return (
@@ -68,6 +75,7 @@ class BreakoutPong extends React.Component {
               <p>Players:</p>
               <div id="playerList">
                 <LobbyList lobbyList={this.state.lobbyList} />
+                <button onClick={this.startGame}>Start Game</button>
               </div>
             </div>
           </div>

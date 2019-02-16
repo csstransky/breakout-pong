@@ -25,6 +25,22 @@ defmodule BreakoutPong.Game do
     }
   end
 
+  def start_game(game) do
+    ## TODO Find out how to get length of list
+    if List.length(game.lobbyList) >= 2 do
+      player1 = game.lobbyList[0]
+      player2 = game.lobbyList[1]
+      #TODO Actually make the new lobby List
+      newLobbyList = []
+      game
+      |> Map.put(:player1, player1)
+      |> Map.put(:player2, player2)
+      |> Map.put(:lobbyList, newLobbyList)
+    else
+      game
+    end
+  end
+
   def add_to_lobby(game, player) do
     if Enum.member?(game.lobbyList, player) do
       game
