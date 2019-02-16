@@ -15,6 +15,8 @@ class BreakoutPong extends React.Component {
         super(props);
 
         this.channel = props.channel;
+        // I took most variables out of here so we can minimize the data being transported in state changes
+        // We can probably add back "window size" and stuff as global, but local variables if we want
         this.state = {
             ballx: 100,
             bally: 100,
@@ -24,11 +26,6 @@ class BreakoutPong extends React.Component {
             player2y: 10,
             player1score: 0,
             player2score: 0,
-            height: 600,
-            width: 700,
-            upArrow: 38,
-            downArrow: 40,
-            loop: false,
         };
 
         this.channel
@@ -65,8 +62,8 @@ class BreakoutPong extends React.Component {
         let ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, 800, 600);
         ctx.fillStyle = "#FF0000";
-        ctx.fillRect(this.state.player2x, this.state.player2y, 30, 110);
-        ctx.fillRect(this.state.player1x, this.state.player1y, 30, 110);
+        ctx.fillRect(this.state.player2x, this.state.player2y, 20, 110);
+        ctx.fillRect(this.state.player1x, this.state.player1y, 20, 110);
         ctx.fillRect(this.state.ballx, this.state.bally, 15,15);
         ctx.font = "40px Courier"
         ctx.fillText(this.state.player1score, 200, 40);
