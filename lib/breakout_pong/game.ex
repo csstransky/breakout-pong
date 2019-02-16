@@ -3,8 +3,8 @@ defmodule BreakoutPong.Game do
     %{
       isLobby: false,
       lobbyList: [],
-      player1: "",
-      player2: "",
+      player1: "Bryce",
+      player2: "John",
       ballx: 100,
       bally: 100,
       ballSpeed: 2,
@@ -29,53 +29,49 @@ defmodule BreakoutPong.Game do
   end
 
   def client_view(game) do
-    x = %{
-      isLobby: Map.get(game, :isLobby),
-      lobbyList: Map.get(game, :lobbyList),
-      player1: Map.get(game, :player1),
-      player2: Map.get(game, :player2),
+    %{
       ballx: Map.get(game, :ballx),
       bally: Map.get(game, :bally),
-      ballSpeed: Map.get(game, :ballSpeed),
-      velx: Map.get(game, :velx),
-      vely: Map.get(game, :vely),
       player1x: Map.get(game, :player1x),
       player1y: Map.get(game, :player1y),
       player2x: Map.get(game, :player2x),
       player2y: Map.get(game, :player2y),
       player1score: Map.get(game, :player1score),
       player2score: Map.get(game, :player2score),
-      height: Map.get(game, :height),
-      width: Map.get(game, :width),
-      upArrow: Map.get(game, :upArrow),
-      downArrow: Map.get(game, :downArrow),
-      paddleHeight: Map.get(game, :paddleHeight),
-      paddleWidth: Map.get(game, :paddleWidth),
-      paddleSpeed: Map.get(game, :paddleSpeed),
-      ballSize: Map.get(game, :ballSize),
-      loop: Map.get(game, :loop),
     }
-    x
   end
 
+  # TODO: keypress won't work until the player variables in the state are set after leaving lobby
   def key_pressed(game, key, player) do
-    if player = Map.get(game, :player1) do
+    IO.inspect(player)
+
+    if player == Map.get(game, :player1) do
+      IO.inspect("player 1 triggered")
       x = Map.get(game, :player1y)
       if key == "up" do
-        Map.put(game, :player1y, x + 20)
+        Map.put(game, :player1y, x + 30)
       else
-        Map.put(game, :player1y, x - 20)
+        Map.put(game, :player1y, x - 30)
       end
     end
 
-    if player = Map.get(game, :player2) do
+    if player == Map.get(game, :player2) do
+      IO.inspect("player 2 triggered")
       x = Map.get(game, :player2y)
       if key == "down" do
-        Map.put(game, :player2y, x + 20)
+        Map.put(game, :player2y, x + 30)
       else
-        Map.put(game, :player2y, x - 20)
+        Map.put(game, :player2y, x - 30)
       end
     end
+  end
+
+  # TODO: this is the function that should be called after leaving lobby to set player and state variables.  We can also use this to restart the game if we re-initialize everything else
+  def initialize_game(game) do
+    Map.put(game,:isLobby, false) # mark as game, not lobby
+    Map.put(Game, :player1, Enum.at(Map.get(game, :lobbyList), 0)) # save the players, in order they joined
+    Map.put(Game, :player2, Enum.at(Map.get(game, :lobbyList), 1)) # save the players, in order they joined
+
   end
 
 
@@ -96,6 +92,9 @@ defmodule BreakoutPong.Game do
       game
     end
   end
+
+
+  ################ Old functions below #######################
 
   def skeleton(word, guesses) do
     Enum.map word, fn cc ->
