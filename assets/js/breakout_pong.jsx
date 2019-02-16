@@ -44,6 +44,10 @@ class BreakoutPong extends React.Component {
         });
     }
 
+    componentDidMount() {
+        this.draw_canvas();
+    }
+
     got_view(view) {
         console.log("new view");
         this.setState(view.game);
