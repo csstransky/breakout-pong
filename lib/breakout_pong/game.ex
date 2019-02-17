@@ -1,30 +1,18 @@
 defmodule BreakoutPong.Game do
   def new do
     %{
-      isLobby: false,
+      isLobby: true,
       lobbyList: [],
       player1: "",
       player2: "",
       ballx: 100,
       bally: 100,
-      ballSpeed: 2,
-      velx: 1,
-      vely: 1,
       player1x: 670,
       player1y: 100,
       player2x: 10,
-      player2y: 100,
+      player2y: 10,
       player1score: 0,
       player2score: 0,
-      height: 600,
-      width: 700,
-      upArrow: 38,
-      downArrow: 40,
-      paddleHeight: 100,
-      paddleWidth: 20,
-      paddleSpeed: 5,
-      ballSize: 10,
-      loop: false,
     }
   end
 
@@ -68,7 +56,7 @@ defmodule BreakoutPong.Game do
       end
     end
   end
-    
+
   # TODO: keypress won't work until the player variables in the state are set after leaving lobby
   def key_pressed(game, key, player) do
     IO.inspect(player)
