@@ -18,6 +18,10 @@ class BreakoutPong extends React.Component {
         // I took most variables out of here so we can minimize the data being transported in state changes
         // We can probably add back "window size" and stuff as global, but local variables if we want
         this.state = {
+            isLobby: false,
+            lobbyList: [],
+            player1: "",
+            player2: "",
             ballx: 100,
             bally: 100,
             player1x: 670,
@@ -56,6 +60,14 @@ class BreakoutPong extends React.Component {
             .receive("ok", this.got_view.bind(this))
     }
 
+    startGame() {
+      this.channel.push("start_game")
+          .receive("ok", resp => { 
+            console.log("Game has started", resp.game)
+            this.setState(resp.game);
+          });
+    }
+        
     draw_canvas() {
         let canvas = this.refs.canvas;
 
@@ -98,6 +110,7 @@ class BreakoutPong extends React.Component {
               <p>Players:</p>
               <div id="playerList">
                 <LobbyList lobbyList={this.state.lobbyList} />
+                <button onClick={this.startGame.bind(this)}>Start Game</button>
               </div>
             </div>
           </div>

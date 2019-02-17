@@ -33,6 +33,22 @@ defmodule BreakoutPongWeb.GamesChannel do
     {:reply, {:ok, %{ "game" => Game.client_view(game)}}, socket}
   end
 
+  def handle_in("start_game", _payload, socket) do
+    name = socket.assigns[:name]
+    # TODO Should test in the fut|> Map.put(:isLobby, false)ure if retreiving the game from socket or
+    # BackupAgent makes more sense here. Retreiving from socket for now.
+    #game = Game.start_game(BackupAgent.get(name))
+    game = Game.start_game(socket.assigns[:game])
+    IO.puts("Can you hear me?")
+    socket = assign(socket, :game, game)
+    IO.puts("PLEASE HEAR ME")
+    BackupAgent.put(name, game)
+
+    player = socket.assigns[:player]
+    update_players(name, player)
+    {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
+  end
+
   def handle_out("update_players", game, socket) do
     player = socket.assigns[:player]
     name = socket.assigns[:name]

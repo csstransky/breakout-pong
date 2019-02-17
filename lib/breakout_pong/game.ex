@@ -3,8 +3,8 @@ defmodule BreakoutPong.Game do
     %{
       isLobby: false,
       lobbyList: [],
-      player1: "Bryce",
-      player2: "John",
+      player1: "",
+      player2: "",
       ballx: 100,
       bally: 100,
       ballSpeed: 2,
@@ -30,6 +30,10 @@ defmodule BreakoutPong.Game do
 
   def client_view(game) do
     %{
+      isLobby: game.isLobby,
+      lobbyList: game.lobbyList,
+      player1: game.player1,
+      player2: game.player2,
       ballx: Map.get(game, :ballx),
       bally: Map.get(game, :bally),
       player1x: Map.get(game, :player1x),
@@ -41,6 +45,30 @@ defmodule BreakoutPong.Game do
     }
   end
 
+  def start_game(game) do
+    if length(game.lobbyList) >= 2 do
+      [player1 | popList] = game.lobbyList
+      [player2 | newLobbyList] = popList
+      game
+      |> Map.put(:player1, player1)
+      |> Map.put(:player2, player2)
+      |> Map.put(:lobbyList, newLobbyList)
+      |> Map.put(:isLobby, false)
+    else
+      # TODO This is strictly for debugging and will have to be removed at some
+      # point before deployment, hence the awkward else if statement
+      if length(game.lobbyList) == 1 do
+        [player1 | newLobbyList] = game.lobbyList
+        game
+        |> Map.put(:player1, player1)
+        |> Map.put(:lobbyList, newLobbyList)
+        |> Map.put(:isLobby, false)
+      else
+        game
+      end
+    end
+  end
+    
   # TODO: keypress won't work until the player variables in the state are set after leaving lobby
   def key_pressed(game, key, player) do
     IO.inspect(player)
@@ -73,7 +101,6 @@ defmodule BreakoutPong.Game do
     Map.put(Game, :player2, Enum.at(Map.get(game, :lobbyList), 1)) # save the players, in order they joined
 
   end
-
 
   def add_to_lobby(game, player) do
     if Enum.member?(game.lobbyList, player) do
