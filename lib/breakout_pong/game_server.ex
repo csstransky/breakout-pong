@@ -34,6 +34,7 @@ defmodule BreakoutPong.GameServer do
   def start_game(name) do
     GenServer.call(reg(name), {:start_game, name})
   end
+  
   def init(game) do
     {:ok, game}
   end
@@ -55,8 +56,10 @@ defmodule BreakoutPong.GameServer do
     {:reply, game, game}
   end
 
-  def handle_call({:start_game}, _from, game) do
-    #TODO Add players correctly to player attributes
+  def handle_call({:start_game, name}, _from, game) do
+    game = BreakoutPong.Game.start_game(game)
+    BreakoutPong.BackupAgent.put(name, game)
+    {:reply, game, game}
   end
 
   def handle_call({:peek, _name}, _from, game) do

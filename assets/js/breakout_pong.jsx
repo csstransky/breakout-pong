@@ -16,6 +16,10 @@ class BreakoutPong extends React.Component {
 
         this.channel = props.channel;
         this.state = {
+            isLobby: false,
+            lobbyList: [],
+            player1: "",
+            player2: "",
             ballx: 100,
             bally: 100,
             ballSpeed: 2,
@@ -61,10 +65,11 @@ class BreakoutPong extends React.Component {
     }
 
     startGame() {
-      console.log("wer>?");
-      console.log(this.state.isLobby);
-      this.state.isLobby = false;
-      this.setState(this.state);
+      this.channel.push("start_game")
+          .receive("ok", resp => { 
+            console.log("Game has started", resp.game)
+            this.setState(resp.game);
+          });
     }
 
     render() {
@@ -75,7 +80,7 @@ class BreakoutPong extends React.Component {
               <p>Players:</p>
               <div id="playerList">
                 <LobbyList lobbyList={this.state.lobbyList} />
-                <button onClick={this.startGame}>Start Game</button>
+                <button onClick={this.startGame.bind(this)}>Start Game</button>
               </div>
             </div>
           </div>

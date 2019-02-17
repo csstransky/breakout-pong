@@ -5,39 +5,79 @@ defmodule BreakoutPong.Game do
       lobbyList: [],
       player1: "",
       player2: "",
-      word: next_word(),
-      guesses: [],
+      ballx: 100,
+      bally: 100,
+      ballSpeed: 2,
+      velx: 1,
+      vely: 1,
+      player1x: 670,
+      player1y: 100,
+      player2x: 10,
+      player2y: 100,
+      player1score: 0,
+      player2score: 0,
+      height: 600,
+      width: 700,
+      upArrow: 38,
+      downArrow: 40,
+      paddleHeight: 100,
+      paddleWidth: 20,
+      paddleSpeed: 5,
+      ballSize: 10,
+      loop: false,
     }
   end
 
   def client_view(game) do
-    ws = String.graphemes(game.word)
-    gs = game.guesses
     %{
       isLobby: game.isLobby,
       lobbyList: game.lobbyList,
       player1: game.player1,
       player2: game.player2,
-      skel: skeleton(ws, gs),
-      goods: Enum.filter(gs, &(Enum.member?(ws, &1))),
-      bads: Enum.filter(gs, &(!Enum.member?(ws, &1))),
-      max: max_guesses(),
+      ballx: 100,
+      bally: 100,
+      ballSpeed: 2,
+      velx: 1,
+      vely: 1,
+      player1x: 670,
+      player1y: 100,
+      player2x: 10,
+      player2y: 100,
+      player1score: 0,
+      player2score: 0,
+      height: 600,
+      width: 700,
+      upArrow: 38,
+      downArrow: 40,
+      paddleHeight: 100,
+      paddleWidth: 20,
+      paddleSpeed: 5,
+      ballSize: 10,
+      loop: false,
     }
   end
 
   def start_game(game) do
-    ## TODO Find out how to get length of list
-    if List.length(game.lobbyList) >= 2 do
-      player1 = game.lobbyList[0]
-      player2 = game.lobbyList[1]
-      #TODO Actually make the new lobby List
-      newLobbyList = []
+    if length(game.lobbyList) >= 2 do
+      [player1 | popList] = game.lobbyList
+      [player2 | newLobbyList] = popList
       game
       |> Map.put(:player1, player1)
       |> Map.put(:player2, player2)
       |> Map.put(:lobbyList, newLobbyList)
+      |> Map.put(:isLobby, false)
     else
-      game
+      # TODO This is strictly for debugging and will have to be removed at some
+      # point before deployment, hence the awkward else if statement
+      if length(game.lobbyList) == 1 do
+        [player1 | newLobbyList] = game.lobbyList
+        game
+        |> Map.put(:player1, player1)
+        |> Map.put(:lobbyList, newLobbyList)
+        |> Map.put(:isLobby, false)
+      else
+        game
+      end
     end
   end
 
