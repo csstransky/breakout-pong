@@ -15,6 +15,8 @@ class BreakoutPong extends React.Component {
         super(props);
 
         this.channel = props.channel;
+        // I took most variables out of here so we can minimize the data being transported in state changes
+        // We can probably add back "window size" and stuff as global, but local variables if we want
         this.state = {
             isLobby: false,
             lobbyList: [],
@@ -22,44 +24,38 @@ class BreakoutPong extends React.Component {
             player2: "",
             ballx: 100,
             bally: 100,
-            ballSpeed: 2,
-            velx: 1,
-            vely: 1,
             player1x: 670,
             player1y: 100,
             player2x: 10,
-            player2y: 100,
+            player2y: 10,
             player1score: 0,
             player2score: 0,
-            height: 600,
-            width: 700,
-            upArrow: 38,
-            downArrow: 40,
-            paddleHeight: 100,
-            paddleWidth: 20,
-            paddleSpeed: 5,
-            ballSize: 10,
-            loop: false,
         };
 
-    this.channel
-        .join()
-        .receive("ok", this.got_view.bind(this))
-        .receive("error", resp => { console.log("Unable to join", resp); });
+        this.channel
+            .join()
+            .receive("ok", this.got_view.bind(this))
+            .receive("error", resp => {
+                console.log("Unable to join", resp);
+            });
 
-    this.channel.on("update", resp => {
-      console.log(resp)
-      this.setState(resp)
-    });
-  }
+        this.channel.on("update", resp => {
+            console.log(resp)
+            this.setState(resp)
+        });
+    }
 
+    componentDidMount() {
+        this.draw_canvas();
+    }
 
     got_view(view) {
-        console.log("new view", view);
+        console.log("new view");
         this.setState(view.game);
     }
 
     initialize_game() {
+        console.log("game restarted from browser side");
         this.channel.push("restart")
             .receive("ok", this.got_view.bind(this))
     }
@@ -71,8 +67,42 @@ class BreakoutPong extends React.Component {
             this.setState(resp.game);
           });
     }
+        
+    draw_canvas() {
+        let canvas = this.refs.canvas;
+
+        let ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, 800, 600);
+        ctx.fillStyle = "#FF0000";
+        ctx.fillRect(this.state.player2x, this.state.player2y, 20, 110);
+        ctx.fillRect(this.state.player1x, this.state.player1y, 20, 110);
+        ctx.fillRect(this.state.ballx, this.state.bally, 15,15);
+        ctx.font = "40px Courier"
+        ctx.fillText(this.state.player1score, 200, 40);
+        ctx.fillText(this.state.player2score, 600, 40);
+
+        return canvas;
+    }
+
+    on_key(ev) {
+        console.log(ev.which);
+        if (ev.which == 38 || ev.which == 37) { //this is the up arrow
+            this.channel.push("onkey", {keypressed: "up"})
+                .receive("ok", this.got_view.bind(this));
+            this.draw_canvas();
+        }
+        if (ev.which == 40 || ev.which == 39) { //this is the down arrow
+            this.channel.push("onkey", {keypressed: "down"})
+                .receive("ok", this.got_view.bind(this));
+            this.draw_canvas();
+        }
+        else {
+            console.log("Key Pressed: Not an up or down key.")
+        }
+    }
 
     render() {
+
       if (this.state.isLobby) {
         return (
           <div className="row">
@@ -87,21 +117,18 @@ class BreakoutPong extends React.Component {
         );
       }
       else {
-        let canvas = document.createElement('CANVAS');
-        canvas.height = 150;
-        canvas.width = 170;
-
-        let player1 = canvas.getContext("2d");
-        player1.fillStyle = '#FF0000';
-        player1.fillRect(10, 10, 20, 100);
-
 
         return (
-          <div dangerouslySetInnerHTML={{ __html: canvas.outerHTML}}/>
-        )
+            <div>
+                <input type="text" id="one" onKeyDown={this.on_key.bind(this)}/>
+                <canvas ref="canvas" width={800} height={600}/>
+            </div>
+      )
       }
     }
 }
+
+
 
 function LobbyList({lobbyList}) {
   return _.map(lobbyList, (player, rowNum) => {
