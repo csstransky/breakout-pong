@@ -26,7 +26,8 @@ defmodule BreakoutPongWeb.GamesChannel do
 
   def handle_in("onkey", %{"keypressed" => ll}, socket) do
     name = socket.assigns[:name]
-    game = Game.key_pressed(socket.assigns[:game], ll)
+    player = socket.assigns[:player]
+    game = Game.key_pressed(socket.assigns[:game], ll, player)
     socket = assign(socket, :game, game)
     BackupAgent.put(name, game)
     IO.inspect(game)
