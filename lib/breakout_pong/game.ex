@@ -166,18 +166,18 @@ defmodule BreakoutPong.Game do
     end
   end
 
-  def set_goal_score(game) do
-    def get_score(score, pointsScored, boundary1, boundary2) do
-      if boundary1 > boundary2 do
-        score + pointsScored
-      else
-        score
-      end
+  def get_score(score, pointsScored, boundary1, boundary2) do
+    if boundary1 > boundary2 do
+      score + pointsScored
+    else
+      score
     end
+  end
 
+  def set_goal_score(game) do
     game
     |> Map.put(:player1score,
-      get_score(game.player1score, constants().goalScoreEnemyPoints),
+      get_score(game.player1score, constants().goalScoreEnemyPoints,
         game.ball1x, game.windowWidth))
     |> Map.put(:player1score,
       get_score(game.player1score, constants().goalScoreSelfPoints,
@@ -231,40 +231,6 @@ defmodule BreakoutPong.Game do
     false
   end
 
-  # TODO: keypress won't work until the player variables in the state are set after leaving lobby
-  def key_pressed(game, key, player) do
-    IO.inspect(player)
-    IO.inspect("key pressed")
-
-    if player == Map.get(game, :player1) do
-      IO.inspect("player 1 triggered")
-      x = Map.get(game, :player1y)
-    x = Map.get(game, :player1y)
-    if player == Map.get(game, :player1)
-       && (x + 30 < Map.get(game, :windowHeight))
-       && (x - 30 < Map.get(game, :windowHeight)) do
-      if key == "up" do
-        Map.put(game, :player1y, x + 30)
-      else
-        Map.put(game, :player1y, x - 30)
-      end
-    end
-
-    if player == Map.get(game, :player2) do
-      IO.inspect("player 2 triggered")
-      x = Map.get(game, :player2y)
-    x = Map.get(game, :player2y)
-    if player == Map.get(game, :player2)
-       && (x + 30 < Map.get(game, :windowHeight))
-       && (x - 30 < Map.get(game, :windowHeight)) do
-      if key == "down" do
-        Map.put(game, :player2y, x + 30)
-      else
-        Map.put(game, :player2y, x - 30)
-      end
-    end
-  end
-
   # TODO: this is the function that should be called after leaving lobby to set player and state variables.  We can also use this to restart the game if we re-initialize everything else
   def initialize_game(game) do
     Map.put(game,:isLobby, false) # mark as game, not lobby
@@ -291,13 +257,6 @@ defmodule BreakoutPong.Game do
     end
   end
 
-  def move_paddle(game, playerNum, move_dist) do
-    if playerNum == 1 do
-      game
-      |> Map.put(:player1y, game.player1y + move_dist)
-    else
-      game
-      |> Map.put(:player2y, game.player2y + move_dist)
   def move_paddle(game, player_num, move_dist) do
     cond do
       player_num == 1
