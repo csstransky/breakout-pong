@@ -40,9 +40,7 @@ defmodule BreakoutPongWeb.GamesChannel do
     # BackupAgent makes more sense here. Retreiving from socket for now.
     #game = Game.start_game(BackupAgent.get(name))
     game = Game.start_game(socket.assigns[:game])
-    IO.puts("Can you hear me?")
     socket = assign(socket, :game, game)
-    IO.puts("PLEASE HEAR ME")
     BackupAgent.put(name, game)
 
     player = socket.assigns[:player]
@@ -50,10 +48,40 @@ defmodule BreakoutPongWeb.GamesChannel do
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 
+  def handle_in("move_paddle", %{"paddle_move_dist" => dist_change}, socket) do
+    name = socket.assigns[:name]
+    player = socket.assigns[:player]
+    # TODO Find out if it's faster to get from backup agent or socket, I'm
+    # assuming the socket in this case since I'm already grabbing from it (I lied?)
+    game = BackupAgent.get(name)
+    # This logic will have to change for more than 2 players
+    # TODO Find a way to correctly do this logic without having to duplicate
+    # the code like this
+    if player == game.player1 do
+      game = Game.move_paddle(game, 1, dist_change)
+      # TODO I'm not sure I actually need to use this code since we're updating
+      # everything
+      socket = assign(socket, :game, game)
+      BackupAgent.put(name, game)
+
+      update_players(name, player)
+      {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
+    else
+      game = Game.move_paddle(game, 2, dist_change)
+      # TODO I'm not sure I actually need to use this code since we're updating
+      # everything
+      socket = assign(socket, :game, game)
+      BackupAgent.put(name, game)
+
+      update_players(name, player)
+      {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
+    end
+  end
+
   def handle_out("update_players", game, socket) do
     player = socket.assigns[:player]
     name = socket.assigns[:name]
-    if player && name do
+    if !player && name do
       IO.puts("This player is RECEIVING update:")
       IO.puts(player)
       push socket, "update", game

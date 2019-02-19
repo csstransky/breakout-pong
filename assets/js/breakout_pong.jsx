@@ -6,129 +6,130 @@ export default function breakout_pong_init(root, channel) {
     ReactDOM.render(<BreakoutPong channel={channel} />, root);
 }
 
+// Global used for the movement of the paddle
+var PADDLE_MOVE = 20;
+
 // Client-Side state for BreakoutPong is:
 // {
 //    TODO: add some documentation
 // }
 class BreakoutPong extends React.Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.channel = props.channel;
-        // I took most variables out of here so we can minimize the data being transported in state changes
-        // We can probably add back "window size" and stuff as global, but local variables if we want
-        this.state = {
-            isLobby: false,
-            lobbyList: [],
-            player1: "",
-            player2: "",
-            ballx: 100,
-            bally: 100,
-            player1x: 670,
-            player1y: 100,
-            player2x: 10,
-            player2y: 10,
-            player1score: 0,
-            player2score: 0,
-        };
+    this.channel = props.channel;
+    // I took most variables out of here so we can minimize the data being transported in state changes
+    // We can probably add back "window size" and stuff as global, but local variables if we want
+    this.state = {
+      isLobby: false,
+      lobbyList: [],
+      player1: "",
+      player2: "",
+      ballx: 100,
+      bally: 100,
+      player1x: 10,
+      player1y: 10,
+      player2x: 670,
+      player2y: 100,
+      player1score: 0,
+      player2score: 0,
+    };
 
-        this.channel
-            .join()
-            .receive("ok", this.got_view.bind(this))
-            .receive("error", resp => {
-                console.log("Unable to join", resp);
-            });
+    this.channel
+      .join()
+      .receive("ok", this.got_view.bind(this))
+      .receive("error", resp => {
+          console.log("Unable to join", resp);
+      });
 
-        this.channel.on("update", resp => {
-            console.log(resp)
-            this.setState(resp)
-        });
-    }
+    this.channel.on("update", resp => {
+      console.log(resp)
+      this.setState(resp)
+    });
+  }
 
-    componentDidMount() {
-        this.draw_canvas();
-    }
+  componentDidMount() {
+    this.draw_canvas();
+  }
 
-    got_view(view) {
-        console.log("new view");
-        this.setState(view.game);
-    }
+  got_view(view) {
+    console.log("new view");
+    this.setState(view.game);
+  }
 
-    initialize_game() {
-        console.log("game restarted from browser side");
-        this.channel.push("restart")
-            .receive("ok", this.got_view.bind(this))
-    }
+  initialize_game() {
+    console.log("game restarted from browser side");
+    this.channel.push("restart")
+      .receive("ok", this.got_view.bind(this))
+  }
 
-    startGame() {
-      this.channel.push("start_game")
-          .receive("ok", resp => { 
-            console.log("Game has started", resp.game)
-            this.setState(resp.game);
-          });
-    }
-        
-    draw_canvas() {
-        let canvas = this.refs.canvas;
+  startGame() {
+    this.channel.push("start_game")
+      .receive("ok", resp => {
+        console.log("Game has started", resp.game)
+        this.setState(resp.game);
+      });
+  }
 
-        let ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, 800, 600);
-        ctx.fillStyle = "#FF0000";
-        ctx.fillRect(this.state.player2x, this.state.player2y, 20, 110);
-        ctx.fillRect(this.state.player1x, this.state.player1y, 20, 110);
-        ctx.fillRect(this.state.ballx, this.state.bally, 15,15);
-        ctx.font = "40px Courier"
-        ctx.fillText(this.state.player1score, 200, 40);
-        ctx.fillText(this.state.player2score, 600, 40);
+  draw_canvas() {
+    let canvas = this.refs.canvas;
 
-        return canvas;
-    }
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 800, 600);
+    ctx.fillStyle = "#FF0000";
+    ctx.fillRect(this.state.player2x, this.state.player2y, 20, 110);
+    ctx.fillRect(this.state.player1x, this.state.player1y, 20, 110);
+    ctx.fillRect(this.state.ballx, this.state.bally, 15,15);
+    ctx.font = "40px Courier"
+    ctx.fillText(this.state.player1score, 200, 40);
+    ctx.fillText(this.state.player2score, 600, 40);
 
-    on_key(ev) {
-        console.log(ev.which);
-        if (ev.which == 38 || ev.which == 37) { //this is the up arrow
-            this.channel.push("onkey", {keypressed: "up"})
-                .receive("ok", this.got_view.bind(this));
-            this.draw_canvas();
-        }
-        if (ev.which == 40 || ev.which == 39) { //this is the down arrow
-            this.channel.push("onkey", {keypressed: "down"})
-                .receive("ok", this.got_view.bind(this));
-            this.draw_canvas();
-        }
-        else {
-            console.log("Key Pressed: Not an up or down key.")
-        }
-    }
+    return canvas;
+  }
 
-    render() {
-
-      if (this.state.isLobby) {
-        return (
-          <div className="row">
-            <div className="column">
-              <p>Players:</p>
-              <div id="playerList">
-                <LobbyList lobbyList={this.state.lobbyList} />
-                <button onClick={this.startGame.bind(this)}>Start Game</button>
-              </div>
-            </div>
-          </div>
-        );
+  on_key(ev) {
+      console.log(ev.which);
+      if (ev.which == 38 || ev.which == 37) { //this is the up arrow
+          // this.channel.push("onkey", {keypressed: "up"})
+          //     .receive("ok", this.got_view.bind(this));
+          this.channel.push("move_paddle", {paddle_move_dist: -1 * PADDLE_MOVE})
+            .receive("ok", this.got_view.bind(this));
+          this.draw_canvas();
+      }
+      if (ev.which == 40 || ev.which == 39) { //this is the down arrow
+        this.channel.push("move_paddle", {paddle_move_dist: PADDLE_MOVE})
+          .receive("ok", this.got_view.bind(this));
+          this.draw_canvas();
       }
       else {
-
-        return (
-            <div>
-                <input type="text" id="one" onKeyDown={this.on_key.bind(this)}/>
-                <canvas ref="canvas" width={800} height={600}/>
-            </div>
-      )
+          console.log("Key Pressed: Not an up or down key.")
       }
+  }
+
+  render() {
+    if (this.state.isLobby) {
+      return (
+        <div className="row">
+          <div className="column">
+            <p>Players:</p>
+            <div id="playerList">
+              <LobbyList lobbyList={this.state.lobbyList} />
+              <button onClick={this.startGame.bind(this)}>Start Game</button>
+            </div>
+          </div>
+        </div>
+      );
     }
+    else {
+      return (
+        <div>
+          <input type="text" id="one" onKeyDown={this.on_key.bind(this)}/>
+          <canvas ref="canvas" width={800} height={600}/>
+        </div>
+      )
+    }
+  }
 }
-
-
 
 function LobbyList({lobbyList}) {
   return _.map(lobbyList, (player, rowNum) => {

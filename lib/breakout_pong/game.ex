@@ -7,10 +7,10 @@ defmodule BreakoutPong.Game do
       player2: "",
       ballx: 100,
       bally: 100,
-      player1x: 670,
-      player1y: 100,
-      player2x: 10,
-      player2y: 10,
+      player1x: 10,
+      player1y: 10,
+      player2x: 670,
+      player2y: 100,
       player1score: 0,
       player2score: 0,
     }
@@ -105,6 +105,16 @@ defmodule BreakoutPong.Game do
       |> Map.put(:lobbyList, game.lobbyList ++ [player])
     else
       game
+    end
+  end
+
+  def move_paddle(game, player_num, move_dist) do
+    if player_num == 1 do
+      game
+      |> Map.put(:player1y, game.player1y + move_dist)
+    else
+      game
+      |> Map.put(:player2y, game.player2y + move_dist)
     end
   end
 
