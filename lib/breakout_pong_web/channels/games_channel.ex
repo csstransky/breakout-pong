@@ -65,6 +65,7 @@ defmodule BreakoutPongWeb.GamesChannel do
       BackupAgent.put(name, game)
 
       update_players(name, player)
+      IO.inspect(game)
       {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
     else
       game = Game.move_paddle(game, 2, dist_change)
@@ -74,6 +75,7 @@ defmodule BreakoutPongWeb.GamesChannel do
       BackupAgent.put(name, game)
 
       update_players(name, player)
+      IO.inspect(game)
       {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
     end
   end
@@ -81,7 +83,8 @@ defmodule BreakoutPongWeb.GamesChannel do
   def handle_out("update_players", game, socket) do
     player = socket.assigns[:player]
     name = socket.assigns[:name]
-    if !player && name do
+    # TODO Find a way not to send updates to the sender of them
+    if player && name do
       IO.puts("This player is RECEIVING update:")
       IO.puts(player)
       push socket, "update", game
@@ -96,8 +99,8 @@ defmodule BreakoutPongWeb.GamesChannel do
     IO.puts(player)
     if player do
       game = BackupAgent.get(name)
-      {:ok, game}
       BreakoutPongWeb.Endpoint.broadcast!("games:#{name}", "update_players", game)
+      {:ok, game}
     end
   end
   # Add authorization logic here as required.
