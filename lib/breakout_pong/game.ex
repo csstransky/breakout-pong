@@ -164,36 +164,28 @@ defmodule BreakoutPong.Game do
   end
 
   def set_goal_score(game) do
+    def get_score(score, pointsScored, boundary1, boundary2) do
+      if boundary1 > boundary2 do
+        score + pointsScored
+      else
+        score
+      end
+    end
+
     game
-    |> Map.put(:player1score, fn game ->
-      if game.ball1x > game.windowWidth do
-        game.player1score + constants().goalScoreEnemyPoints
-      else
-        game.player1score
-      end
-    end)
-    |> Map.put(:player1score, fn game ->
-      if game.ballx < 0 do
-        game.player1score + constants().goalScoreSelfPoints
-      else
-        game.player1score
-      end
-    end)
-      # TODO abstract this disgusting code
-      |> Map.put(:player2score, fn game ->
-        if game.ball2x > game.windowWidth do
-          game.player2score + constants().goalScoreSelfPoints
-        else
-          game.player2score
-        end
-      end)
-      |> Map.put(:player2score, fn game ->
-        if game.ball2x < 0 do
-          game.player2score + constants().goalScoreEnemyPoints
-        else
-          game.player2score
-        end
-      end)
+    |> Map.put(:player1score,
+      get_score(game.player1score, constants().goalScoreEnemyPoints),
+        game.ball1x, game.windowWidth))
+    |> Map.put(:player1score,
+      get_score(game.player1score, constants().goalScoreSelfPoints,
+        0, game.ball1x))
+    # TODO abstract this disgusting code
+    |> Map.put(:player2score,
+      get_score(game.player2score, constants.goalScoreSelfPoints,
+        game.ball2x,game.windowWidth))
+    |> Map.put(:player2score,
+      get_score(game.player2score, constants.goalScoreEnemyPoints,
+        0, game.ball2x))
   end
 
   def set_new_player_ball(game, tempBall, playerNum) do
