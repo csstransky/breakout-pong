@@ -4,10 +4,11 @@ import _ from "lodash";
 
 export default function breakout_pong_init(root, channel) {
     ReactDOM.render(<BreakoutPong channel={channel} />, root);
+  ReactDOM.render(<BreakoutPong channel={channel}/>, root);
 }
 
 // Global used for the movement of the paddle
-var PADDLE_MOVE = 20;
+var PADDLE_MOVE = 40;
 
 // Client-Side state for BreakoutPong is:
 // {
@@ -28,18 +29,20 @@ class BreakoutPong extends React.Component {
       ballx: 100,
       bally: 100,
       player1x: 10,
-      player1y: 10,
-      player2x: 670,
-      player2y: 100,
+      player1y: 0,
+      player2x: 770,
+      player2y: 0,
       player1score: 0,
       player2score: 0,
+      windowHeight: 600,
+      windowWidth: 800,
     };
 
     this.channel
       .join()
       .receive("ok", this.got_view.bind(this))
       .receive("error", resp => {
-          console.log("Unable to join", resp);
+        console.log("Unable to join", resp);
       });
 
     this.channel.on("update", resp => {
@@ -50,6 +53,11 @@ class BreakoutPong extends React.Component {
 
   componentDidMount() {
     this.draw_canvas();
+    this.interval = setInterval(() => this.setState(this.draw_canvas()), 50);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   got_view(view) {
@@ -75,35 +83,44 @@ class BreakoutPong extends React.Component {
     let canvas = this.refs.canvas;
 
     let ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, 800, 600);
-    ctx.fillStyle = "#FF0000";
+
+    // Player Graphics
+    ctx.fillStyle = "#002eff";
+    ctx.setLineDash([]);
+    ctx.clearRect(0, 0, this.state.windowWidth, this.state.windowHeight);
     ctx.fillRect(this.state.player2x, this.state.player2y, 20, 110);
     ctx.fillRect(this.state.player1x, this.state.player1y, 20, 110);
-    ctx.fillRect(this.state.ballx, this.state.bally, 15,15);
     ctx.font = "40px Courier"
     ctx.fillText(this.state.player1score, 200, 40);
     ctx.fillText(this.state.player2score, 600, 40);
+
+
+    // Ball Graphics
+    ctx.fillStyle = "#06ff18";
+    ctx.beginPath();
+    ctx.arc(50, 50, 8, 0, 2 * Math.PI);
+    ctx.fill();
 
     return canvas;
   }
 
   on_key(ev) {
+    console.log(ev.which);
+    if (ev.which == 38 || ev.which == 37) { //this is the up arrow
+      // this.channel.push("onkey", {keypressed: "up"})
+      //     .receive("ok", this.got_view.bind(this));
+      this.channel.push("move_paddle", {paddle_move_dist: -1 * PADDLE_MOVE})
+        .receive("ok", this.got_view.bind(this));
+      this.draw_canvas();
+    }
+    if (ev.which == 40 || ev.which == 39) { //this is the down arrow
+      this.channel.push("move_paddle", {paddle_move_dist: PADDLE_MOVE})
+        .receive("ok", this.got_view.bind(this));
+      this.draw_canvas();
+    } else {
+      console.log("Key Pressed: Not an up or down key.")
       console.log(ev.which);
-      if (ev.which == 38 || ev.which == 37) { //this is the up arrow
-          // this.channel.push("onkey", {keypressed: "up"})
-          //     .receive("ok", this.got_view.bind(this));
-          this.channel.push("move_paddle", {paddle_move_dist: -1 * PADDLE_MOVE})
-            .receive("ok", this.got_view.bind(this));
-          this.draw_canvas();
-      }
-      if (ev.which == 40 || ev.which == 39) { //this is the down arrow
-        this.channel.push("move_paddle", {paddle_move_dist: PADDLE_MOVE})
-          .receive("ok", this.got_view.bind(this));
-          this.draw_canvas();
-      }
-      else {
-          console.log("Key Pressed: Not an up or down key.")
-      }
+    }
   }
 
   render() {
@@ -113,14 +130,13 @@ class BreakoutPong extends React.Component {
           <div className="column">
             <p>Players:</p>
             <div id="playerList">
-              <LobbyList lobbyList={this.state.lobbyList} />
+              <LobbyList lobbyList={this.state.lobbyList}/>
               <button onClick={this.startGame.bind(this)}>Start Game</button>
             </div>
           </div>
         </div>
       );
-    }
-    else {
+    } else {
       return (
         <div>
           <input type="text" id="one" onKeyDown={this.on_key.bind(this)}/>

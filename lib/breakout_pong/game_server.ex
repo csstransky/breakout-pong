@@ -33,6 +33,7 @@ defmodule BreakoutPong.GameServer do
 
   def start_game(name) do
     GenServer.call(reg(name), {:start_game, name})
+    Process.send_after()
   end
 
   def init(game) do

@@ -31,6 +31,9 @@ defmodule BreakoutPong.Game do
       player1y: 10,
       player2x: 670,
       player2y: 100,
+      player1y: 0,
+      player2x: 770,
+      player2y: 0,
       player1score: 0,
       player2score: 0,
       windowHeight: 600,
@@ -231,10 +234,15 @@ defmodule BreakoutPong.Game do
   # TODO: keypress won't work until the player variables in the state are set after leaving lobby
   def key_pressed(game, key, player) do
     IO.inspect(player)
+    IO.inspect("key pressed")
 
     if player == Map.get(game, :player1) do
       IO.inspect("player 1 triggered")
       x = Map.get(game, :player1y)
+    x = Map.get(game, :player1y)
+    if player == Map.get(game, :player1)
+       && (x + 30 < Map.get(game, :windowHeight))
+       && (x - 30 < Map.get(game, :windowHeight)) do
       if key == "up" do
         Map.put(game, :player1y, x + 30)
       else
@@ -245,6 +253,10 @@ defmodule BreakoutPong.Game do
     if player == Map.get(game, :player2) do
       IO.inspect("player 2 triggered")
       x = Map.get(game, :player2y)
+    x = Map.get(game, :player2y)
+    if player == Map.get(game, :player2)
+       && (x + 30 < Map.get(game, :windowHeight))
+       && (x - 30 < Map.get(game, :windowHeight)) do
       if key == "down" do
         Map.put(game, :player2y, x + 30)
       else
@@ -258,6 +270,7 @@ defmodule BreakoutPong.Game do
     Map.put(game,:isLobby, false) # mark as game, not lobby
     Map.put(Game, :player1, Enum.at(Map.get(game, :lobbyList), 0)) # save the players, in order they joined
     Map.put(Game, :player2, Enum.at(Map.get(game, :lobbyList), 1)) # save the players, in order they joined
+
   end
 
   def add_to_lobby(game, player) do
@@ -285,6 +298,20 @@ defmodule BreakoutPong.Game do
     else
       game
       |> Map.put(:player2y, game.player2y + move_dist)
+  def move_paddle(game, player_num, move_dist) do
+    cond do
+      player_num == 1
+      && (game.player1y + move_dist < Map.get(game, :windowHeight) - 60)
+      && (game.player1y + move_dist >= 0) ->
+        game
+        |> Map.put(:player1y, game.player1y + move_dist)
+      player_num == 2
+      && (game.player2y + move_dist < Map.get(game, :windowHeight) - 60)
+      && (game.player2y + move_dist >= 0) ->
+        game
+        |> Map.put(:player2y, game.player2y + move_dist)
+      true ->
+        game
     end
   end
 
