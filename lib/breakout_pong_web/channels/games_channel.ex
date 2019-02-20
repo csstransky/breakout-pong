@@ -52,9 +52,6 @@ defmodule BreakoutPongWeb.GamesChannel do
 
   def move_player_paddle(game, player, dist_change) do
     # This logic will have to change for more than 2 players
-    IO.inspect("game and player below")
-    IO.inspect(game)
-    IO.inspect(player)
     if player == game.playerOne.name do
       Game.move_paddle(game, 1, dist_change)
     else
@@ -86,7 +83,7 @@ defmodule BreakoutPongWeb.GamesChannel do
     if player && name do
       IO.puts("This player is RECEIVING update:")
       IO.puts(player)
-      push socket, "update", game
+      push socket, "update", Game.client_view(game)
       {:noreply, socket}
     else
       {:noreply, socket}
