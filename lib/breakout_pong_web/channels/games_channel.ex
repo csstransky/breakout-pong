@@ -43,7 +43,8 @@ defmodule BreakoutPongWeb.GamesChannel do
     socket = assign(socket, :game, game)
     BackupAgent.put(name, game)
 
-    BreakoutPong.GameServer.move_balls()
+    ## TODO Finish this function
+    #BreakoutPong.GameServer.move_balls()
     player = socket.assigns[:player]
     update_players(name, player)
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
@@ -51,10 +52,13 @@ defmodule BreakoutPongWeb.GamesChannel do
 
   def move_player_paddle(game, player, dist_change) do
     # This logic will have to change for more than 2 players
-    if player == game.player1 do
-      Game.move_paddle(game, 1, dist_change)
-    else
-      Game.move_paddle(game, 2, dist_change)
+    cond do
+      player == game.playerOne.name ->
+        Game.move_paddle(game, 1, dist_change)
+      player == game.playerTwo.name ->
+        Game.move_paddle(game, 2, dist_change)
+      true ->
+        game
     end
   end
 
