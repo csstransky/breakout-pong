@@ -12,8 +12,11 @@ defmodule BreakoutPong.Application do
       BreakoutPongWeb.Endpoint,
       # Starts a worker by calling: BreakoutPong.Worker.start_link(arg)
       # {BreakoutPong.Worker, arg},
+
       BreakoutPong.GameSup,
       BreakoutPong.BackupAgent,
+      BreakoutPong.GameSup.reg(Registry, [:unique, :game_names])
+
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

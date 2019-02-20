@@ -19,10 +19,18 @@ defmodule BreakoutPong.GameServer do
   def start_link(name) do
     # Will have to change this later so it doesn't create a new game if the game
     # exists, but the player doesn't
+    name2 = via_tuple(name)
     game = BreakoutPong.BackupAgent.get(name) || BreakoutPong.Game.new()
     IO.inspect(BreakoutPong.BackAgent.get(name))
     IO.inspect("genserver name above")
     GenServer.start_link(__MODULE__, game, name: reg(name))
+  end
+
+
+  defp via_tuple(name) do
+    x = {:via, Registry, {:game_names, name}}
+    IO.inspect("via tuple called")
+    x
   end
 
   def guess(name, letter) do
