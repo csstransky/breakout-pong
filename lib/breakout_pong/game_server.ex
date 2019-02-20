@@ -42,8 +42,13 @@ defmodule BreakoutPong.GameServer do
     IO.inspect("ticking")
   end
 
+
   def init(game) do
     {:ok, game}
+  end
+
+  def handle_cast(:start_tick, state) do
+    IO.inspect("Genserver start tick function called")
   end
 
   def join_lobby(name, player) do

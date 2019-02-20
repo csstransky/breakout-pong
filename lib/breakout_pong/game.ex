@@ -21,7 +21,7 @@ defmodule BreakoutPong.Game do
         name: "",
         score: 0,
         paddleX: 10,
-        paddleY: 10,
+        paddleY: 0,
         ballX: 100,
         ballY: 100,
         ballSpeedX: 20,
@@ -30,8 +30,8 @@ defmodule BreakoutPong.Game do
       playerTwo: %{
         name: "",
         score: 0,
-        paddleX: 670,
-        paddleY: 100,
+        paddleX: 770,
+        paddleY: 0,
         ballX: 570,
         ballY: 200,
         ballSpeedX: 20,
@@ -64,7 +64,7 @@ defmodule BreakoutPong.Game do
   end
 
   def client_view(game) do
-    %{
+    x = %{
       #TODO, this is a giant mess that will have to be fixed
       isLobby: game.isLobby,
       lobbyList: game.lobbyList,
@@ -83,6 +83,7 @@ defmodule BreakoutPong.Game do
       windowWidth: Map.get(game, :windowWidth),
       windowHeight: Map.get(game, :windowHeight),
     }
+    x
   end
 
   def start_game(game) do
@@ -107,6 +108,8 @@ defmodule BreakoutPong.Game do
         game
       end
     end
+
+    BreakoutPong.Genserver.start_link
   end
 
   def move_balls(game) do
@@ -259,15 +262,15 @@ defmodule BreakoutPong.Game do
   def move_paddle(game, player_num, move_dist) do
     cond do
       player_num == 1
-        ## TODO Get rid of these magic numbers 60
-      && (game.playerOne.paddleY + move_dist < game.windowHeight - 60)
+        ## TODO Get rid of these magic numbers 60 (80 actually)
+      && (game.playerOne.paddleY + move_dist < game.windowHeight - 80)
       && (game.playerOne.paddleY + move_dist >= 0) ->
         newPaddleY = game.playerOne.paddleY + move_dist
         game
         |> assign_player_value(:playerOne, :paddleY, newPaddleY)
       player_num == 2
-        ## TODO Get rid of these magic numbers 60
-      && (game.playerTwo.paddleY + move_dist < game.windowHeight - 60)
+        ## TODO Get rid of these magic numbers 60 (80 actually)
+      && (game.playerTwo.paddleY + move_dist < game.windowHeight - 80)
       && (game.playerTwo.paddleY + move_dist >= 0) ->
         newPaddleY = game.playerTwo.paddleY + move_dist
         game

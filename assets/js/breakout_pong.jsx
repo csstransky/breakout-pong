@@ -60,6 +60,7 @@ class BreakoutPong extends React.Component {
     clearInterval(this.interval);
   }
 
+  // TODO: There's probably an issue with the got-view function not being called to update the world
   got_view(view) {
     console.log("new view");
     this.setState(view.game);
@@ -93,11 +94,11 @@ class BreakoutPong extends React.Component {
     ctx.fillRect(this.state.player2x, this.state.player2y, 20, 110);
     ctx.fillRect(this.state.player1x, this.state.player1y, 20, 110);
     ctx.font = "20px Courier"
-    ctx.fillText(this.state.player1, 100, 40);
-    ctx.fillText(this.state.player2, 500, 40);
+    ctx.fillText(this.state.player1, 100, 20);
+    ctx.fillText(this.state.player2, 500, 20);
     ctx.font = "40px Comic Sans"
     ctx.fillText(this.state.player1score, 350, 40);
-    ctx.fillText(this.state.player2score, 450, 40);
+    ctx.fillText(this.state.player2score, 430, 40);
     ctx.setLineDash([2,4]);
     ctx.beginPath();
     ctx.moveTo(20, 0);
@@ -119,6 +120,7 @@ class BreakoutPong extends React.Component {
     ctx.beginPath();
     ctx.arc(50, 50, 8, 0, 2 * Math.PI);
     ctx.fill();
+
 
     return canvas;
   }
