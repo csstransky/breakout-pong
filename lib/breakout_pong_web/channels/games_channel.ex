@@ -15,9 +15,9 @@ defmodule BreakoutPongWeb.GamesChannel do
       update_players(name, player)
 
       socket = socket
-      |> assign(:player, player)
-      |> assign(:game, game)
-      |> assign(:name, name)
+               |> assign(:player, player)
+               |> assign(:game, game)
+               |> assign(:name, name)
       {:ok, %{"join" => name, "game" => Game.client_view(game)}, socket}
     else
       {:error, %{reason: "unauthorized"}}
@@ -86,7 +86,7 @@ defmodule BreakoutPongWeb.GamesChannel do
     if player && name do
       IO.puts("This player is RECEIVING update:")
       IO.puts(player)
-      push socket, "update", game
+      push socket, "update", Game.client_view(game)
       {:noreply, socket}
     else
       {:noreply, socket}

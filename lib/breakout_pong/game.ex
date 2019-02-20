@@ -21,7 +21,7 @@ defmodule BreakoutPong.Game do
         name: "",
         score: 0,
         paddleX: 10,
-        paddleY: 10,
+        paddleY: 0,
         ballX: 100,
         ballY: 100,
         ballSpeedX: 20,
@@ -30,8 +30,8 @@ defmodule BreakoutPong.Game do
       playerTwo: %{
         name: "",
         score: 0,
-        paddleX: 670,
-        paddleY: 100,
+        paddleX: 770,
+        paddleY: 0,
         ballX: 570,
         ballY: 200,
         ballSpeedX: 20,
@@ -64,7 +64,7 @@ defmodule BreakoutPong.Game do
   end
 
   def client_view(game) do
-    %{
+    x = %{
       #TODO, this is a giant mess that will have to be fixed
       isLobby: game.isLobby,
       lobbyList: game.lobbyList,
@@ -83,6 +83,7 @@ defmodule BreakoutPong.Game do
       windowWidth: Map.get(game, :windowWidth),
       windowHeight: Map.get(game, :windowHeight),
     }
+    x
   end
 
   def start_game(game) do
@@ -107,6 +108,8 @@ defmodule BreakoutPong.Game do
         game
       end
     end
+
+    BreakoutPong.Genserver.start_link
   end
 
   def move_balls(game) do
@@ -154,17 +157,17 @@ defmodule BreakoutPong.Game do
       ballHitFloorOrCeiling?(game, tempBall) ->
         IO.puts "ball hit cieling"
         tempBall = tempBall
-        |> Map.put(:speedY, -1 * tempBall.speedY)
-        # TODO Change this if bad things happen to the ball
-        |> Map.put(:y, tempBall.y + 2 * tempBall.speedY)
+                   |> Map.put(:speedY, -1 * tempBall.speedY)
+          # TODO Change this if bad things happen to the ball
+                   |> Map.put(:y, tempBall.y + 2 * tempBall.speedY)
         game
         |> set_new_player_ball(tempBall, playerNum)
       ballHitPaddle?(game, tempBall) ->
         IO.puts "Ball hit paddle"
         tempBall = tempBall
-        |> Map.put(:speedX, -1 * tempBall.speedX)
-        |> Map.put(:x, tempBall.x + 2 * tempBall.speedX)
-        |> set_new_player_ball(tempBall, playerNum)
+                   |> Map.put(:speedX, -1 * tempBall.speedX)
+                   |> Map.put(:x, tempBall.x + 2 * tempBall.speedX)
+                   |> set_new_player_ball(tempBall, playerNum)
       ballHitBlock?(game, tempBall) ->
         IO.puts "ball hit block"
         game
@@ -186,17 +189,17 @@ defmodule BreakoutPong.Game do
   def set_goal_score(game) do
     game
     |> assign_player_value(:playerOne, :score,
-        get_score(game.playerOne.score, constants().goalScoreEnemyPoints,
-          game.playerOne.ballX, game.windowWidth))
+         get_score(game.playerOne.score, constants().goalScoreEnemyPoints,
+           game.playerOne.ballX, game.windowWidth))
     |> assign_player_value(:playerOne, :score,
-        get_score(game.playerOne.score, constants().goalScoreSelfPoints,
-          0, game.playerOne.ballX))
+         get_score(game.playerOne.score, constants().goalScoreSelfPoints,
+           0, game.playerOne.ballX))
     |> assign_player_value(:playerTwo, :score,
-        get_score(game.playerTwo.score, constants.goalScoreSelfPoints,
-          game.playerTwo.ballX,game.windowWidth))
+         get_score(game.playerTwo.score, constants.goalScoreSelfPoints,
+           game.playerTwo.ballX, game.windowWidth))
     |> assign_player_value(:playerTwo, :score,
-        get_score(game.playerTwo.score, constants.goalScoreEnemyPoints,
-          0, game.playerTwo.ballX))
+         get_score(game.playerTwo.score, constants.goalScoreEnemyPoints,
+           0, game.playerTwo.ballX))
   end
 
   def set_new_player_ball(game, tempBall, playerNum) do
@@ -224,13 +227,13 @@ defmodule BreakoutPong.Game do
 
   def ballHitPaddle?(game, ball) do
     (ball.x < game.playerOne.paddleX + constants().paddleWidth
-    && ball.x > game.playerOne.paddleX
-    && ball.y < game.playerOne.paddleY + constants().paddleHeight
-    && ball.y > game.playerOne.paddleY)
+     && ball.x > game.playerOne.paddleX
+     && ball.y < game.playerOne.paddleY + constants().paddleHeight
+     && ball.y > game.playerOne.paddleY)
     || (ball.x < game.playerTwo.paddleX + constants().paddleWidth
-    && ball.x > game.playerTwo.paddleX
-    && ball.y < game.playerTwo.paddleY + constants().paddleHeight
-    && ball.y > game.playerTwo.paddleY)
+        && ball.x > game.playerTwo.paddleX
+        && ball.y < game.playerTwo.paddleY + constants().paddleHeight
+        && ball.y > game.playerTwo.paddleY)
   end
 
   def ballHitBlock?(game, ball) do
@@ -259,21 +262,23 @@ defmodule BreakoutPong.Game do
   def move_paddle(game, player_num, move_dist) do
     cond do
       player_num == 1
-      ## TODO Get rid of these magic numbers 60
-      && (game.playerOne.paddleY + move_dist < game.windowHeight - 60)
+        ## TODO Get rid of these magic numbers 60 (80 actually)
+      && (game.playerOne.paddleY + move_dist < game.windowHeight - 80)
       && (game.playerOne.paddleY + move_dist >= 0) ->
         newPaddleY = game.playerOne.paddleY + move_dist
         game
         |> assign_player_value(:playerOne, :paddleY, newPaddleY)
       player_num == 2
-      ## TODO Get rid of these magic numbers 60
-      && (game.playerTwo.paddleY + move_dist < game.windowHeight - 60)
+        ## TODO Get rid of these magic numbers 60 (80 actually)
+      && (game.playerTwo.paddleY + move_dist < game.windowHeight - 80)
       && (game.playerTwo.paddleY + move_dist >= 0) ->
         newPaddleY = game.playerTwo.paddleY + move_dist
         game
         |> assign_player_value(:playerTwo, :paddleY, newPaddleY)
       true ->
+        IO.inspect("cond fell through")
         game
     end
   end
 end
+
