@@ -81,9 +81,11 @@ class BreakoutPong extends React.Component {
   }
 
   draw_canvas() {
+    if (this.state.isLobby) {
+      return
+    }
     console.log("redrawing canvas")
     let canvas = this.refs.canvas;
-
     let ctx = canvas.getContext("2d");
 
     // Player Graphics
@@ -120,7 +122,6 @@ class BreakoutPong extends React.Component {
     ctx.beginPath();
     ctx.arc(50, 50, 8, 0, 2 * Math.PI);
     ctx.fill();
-
 
     return canvas;
   }

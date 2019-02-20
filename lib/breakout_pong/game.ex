@@ -108,8 +108,6 @@ defmodule BreakoutPong.Game do
         game
       end
     end
-
-    BreakoutPong.Genserver.start_link
   end
 
   def move_balls(game) do
@@ -281,4 +279,3 @@ defmodule BreakoutPong.Game do
     end
   end
 end
-

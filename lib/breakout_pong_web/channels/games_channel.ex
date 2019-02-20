@@ -15,9 +15,9 @@ defmodule BreakoutPongWeb.GamesChannel do
       update_players(name, player)
 
       socket = socket
-               |> assign(:player, player)
-               |> assign(:game, game)
-               |> assign(:name, name)
+        |> assign(:player, player)
+        |> assign(:game, game)
+        |> assign(:name, name)
       {:ok, %{"join" => name, "game" => Game.client_view(game)}, socket}
     else
       {:error, %{reason: "unauthorized"}}

@@ -50,31 +50,4 @@ defmodule BreakoutPong.GameServer do
   def handle_cast(:start_tick, state) do
     IO.inspect("Genserver start tick function called")
   end
-
-  def join_lobby(name, player) do
-    game = BreakoutPong.BackupAgent.get(name) || BreakoutPong.Game.new()
-    GenServer.call(reg(name), {:join_lobby, name, player})
-  end
-
-  def handle_call({:guess, name, letter}, _from, game) do
-    game = BreakoutPong.Game.guess(game, letter)
-    BreakoutPong.BackupAgent.put(name, game)
-    {:reply, game, game}
-  end
-
-  def handle_call({:join_lobby, name, player}, _from, game) do
-    game = BreakoutPong.Game.add_to_lobby(game, player)
-    BreakoutPong.BackupAgent.put(name, game)
-    {:reply, game, game}
-  end
-
-  def handle_call({:start_game, name}, _from, game) do
-    game = BreakoutPong.Game.start_game(game)
-    BreakoutPong.BackupAgent.put(name, game)
-    {:reply, game, game}
-  end
-
-  def handle_call({:peek, _name}, _from, game) do
-    {:reply, game, game}
-  end
 end
