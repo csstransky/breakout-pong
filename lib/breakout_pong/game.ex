@@ -196,7 +196,7 @@ defmodule BreakoutPong.Game do
            0, game.playerOne.ballX))
     |> assign_player_value(:playerTwo, :score,
          get_score(game.playerTwo.score, constants.goalScoreSelfPoints,
-           game.playerTwo.ballX,game.windowWidth))
+           game.playerTwo.ballX, game.windowWidth))
     |> assign_player_value(:playerTwo, :score,
          get_score(game.playerTwo.score, constants.goalScoreEnemyPoints,
            0, game.playerTwo.ballX))
@@ -281,3 +281,4 @@ defmodule BreakoutPong.Game do
     end
   end
 end
+
