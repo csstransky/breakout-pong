@@ -15,9 +15,9 @@ defmodule BreakoutPongWeb.GamesChannel do
       update_players(name, player)
 
       socket = socket
-      |> assign(:player, player)
-      |> assign(:game, game)
-      |> assign(:name, name)
+               |> assign(:player, player)
+               |> assign(:game, game)
+               |> assign(:name, name)
       {:ok, %{"join" => name, "game" => Game.client_view(game)}, socket}
     else
       {:error, %{reason: "unauthorized"}}
@@ -43,9 +43,23 @@ defmodule BreakoutPongWeb.GamesChannel do
     socket = assign(socket, :game, game)
     BackupAgent.put(name, game)
 
+    ## TODO Finish this function
+    #BreakoutPong.GameServer.move_balls()
     player = socket.assigns[:player]
     update_players(name, player)
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
+  end
+
+  def move_player_paddle(game, player, dist_change) do
+    # This logic will have to change for more than 2 players
+    IO.inspect("game and player below")
+    IO.inspect(game)
+    IO.inspect(player)
+    if player == game.playerOne.name do
+      Game.move_paddle(game, 1, dist_change)
+    else
+      Game.move_paddle(game, 2, dist_change)
+    end
   end
 
   def handle_in("move_paddle", %{"paddle_move_dist" => dist_change}, socket) do
@@ -54,30 +68,15 @@ defmodule BreakoutPongWeb.GamesChannel do
     # TODO Find out if it's faster to get from backup agent or socket, I'm
     # assuming the socket in this case since I'm already grabbing from it (I lied?)
     game = BackupAgent.get(name)
-    # This logic will have to change for more than 2 players
-    # TODO Find a way to correctly do this logic without having to duplicate
-    # the code like this
-    if player == game.player1 do
-      game = Game.move_paddle(game, 1, dist_change)
-      # TODO I'm not sure I actually need to use this code since we're updating
-      # everything
-      socket = assign(socket, :game, game)
-      BackupAgent.put(name, game)
+    game =  move_player_paddle(game, player, dist_change)
+    # TODO I'm not sure I actually need to use this code since we're updating
+    # everything
+    socket = assign(socket, :game, game)
+    BackupAgent.put(name, game)
 
-      update_players(name, player)
-      IO.inspect(game)
-      {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
-    else
-      game = Game.move_paddle(game, 2, dist_change)
-      # TODO I'm not sure I actually need to use this code since we're updating
-      # everything
-      socket = assign(socket, :game, game)
-      BackupAgent.put(name, game)
-
-      update_players(name, player)
-      IO.inspect(game)
-      {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
-    end
+    update_players(name, player)
+    IO.inspect(game)
+    {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 
   def handle_out("update_players", game, socket) do

@@ -80,6 +80,7 @@ class BreakoutPong extends React.Component {
   }
 
   draw_canvas() {
+    console.log("redrawing canvas")
     let canvas = this.refs.canvas;
 
     let ctx = canvas.getContext("2d");
@@ -88,11 +89,29 @@ class BreakoutPong extends React.Component {
     ctx.fillStyle = "#002eff";
     ctx.setLineDash([]);
     ctx.clearRect(0, 0, this.state.windowWidth, this.state.windowHeight);
+    ctx.strokeRect(0,0, this.state.windowWidth, this.state.windowHeight);
     ctx.fillRect(this.state.player2x, this.state.player2y, 20, 110);
     ctx.fillRect(this.state.player1x, this.state.player1y, 20, 110);
-    ctx.font = "40px Courier"
-    ctx.fillText(this.state.player1score, 200, 40);
-    ctx.fillText(this.state.player2score, 600, 40);
+    ctx.font = "20px Courier"
+    ctx.fillText(this.state.player1, 100, 40);
+    ctx.fillText(this.state.player2, 500, 40);
+    ctx.font = "40px Comic Sans"
+    ctx.fillText(this.state.player1score, 350, 40);
+    ctx.fillText(this.state.player2score, 450, 40);
+    ctx.setLineDash([2,4]);
+    ctx.beginPath();
+    ctx.moveTo(20, 0);
+    ctx.lineTo(20, 600)
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(780, 0);
+    ctx.lineTo(780, 600)
+    ctx.stroke();
+    ctx.setLineDash([4,8]);
+    ctx.beginPath();
+    ctx.moveTo(400, 0);
+    ctx.lineTo(400, 600)
+    ctx.stroke();
 
 
     // Ball Graphics

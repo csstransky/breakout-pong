@@ -17,44 +17,50 @@ defmodule BreakoutPong.Game do
     %{
       isLobby: true,
       lobbyList: [],
-      player1: "",
-      player2: "",
-      ball1x: 100,
-      ball1y: 100,
-      ball1SpeedX: 20,
-      ball1SpeedY: 20,
-      ball2x: 200,
-      ball2y: 200,
-      ball2SpeedX: 20,
-      ball2SpeedY: 20,
-      player1x: 10,
-      player1y: 10,
-      player2x: 670,
-      player2y: 100,
-      player1y: 0,
-      player2x: 770,
-      player2y: 0,
-      player1score: 0,
-      player2score: 0,
+      playerOne: %{
+        name: "",
+        score: 0,
+        paddleX: 10,
+        paddleY: 10,
+        ballX: 100,
+        ballY: 100,
+        ballSpeedX: 20,
+        ballSpeedY: 20,
+      },
+      playerTwo: %{
+        name: "",
+        score: 0,
+        paddleX: 670,
+        paddleY: 100,
+        ballX: 570,
+        ballY: 200,
+        ballSpeedX: 20,
+        ballSpeedY: 20,
+      },
       windowHeight: 600,
       windowWidth: 800,
     }
   end
 
+  def assign_player_value(game, player, type, value) do
+    playerMap = Map.get(game, player)
+    Map.put(game, player, Map.put(playerMap, type, value))
+  end
+
   def reset_positions(game) do
     game
-    |> Map.put(:ball1x, new().ball1x)
-    |> Map.put(:ball1y, new().ball1y)
-    |> Map.put(:ball1SpeedX, new().ball1SpeedX)
-    |> Map.put(:ball1SpeedY, new().ball1SpeedY)
-    |> Map.put(:ball2x, new().ball2x)
-    |> Map.put(:ball2y, new().ball2y)
-    |> Map.put(:ball2SpeedX, new().ball2SpeedX)
-    |> Map.put(:ball2SpeedY, new().ball2SpeedY)
-    |> Map.put(:player1x, new().player1x)
-    |> Map.put(:player1y, new().player1y)
-    |> Map.put(:player2x, new().player2x)
-    |> Map.put(:player2y, new().player2y)
+    |> assign_player_value(:playerOne, :ballX, new().playerOne.ballX)
+    |> assign_player_value(:playerOne, :ballY, new().playerOne.ballY)
+    |> assign_player_value(:playerOne, :ballSpeedX, new().playerOne.ballSpeedX)
+    |> assign_player_value(:playerOne, :ballSpeedY, new().playerOne.ballSpeedY)
+    |> assign_player_value(:playerOne, :paddleX, new().playerOne.paddleX)
+    |> assign_player_value(:playerOne, :paddleY, new().playerOne.paddleY)
+    |> assign_player_value(:playerTwo, :ballX, new().playerTwo.ballX)
+    |> assign_player_value(:playerTwo, :ballY, new().playerTwo.ballY)
+    |> assign_player_value(:playerTwo, :ballSpeedX, new().playerTwo.ballSpeedX)
+    |> assign_player_value(:playerTwo, :ballSpeedY, new().playerTwo.ballSpeedY)
+    |> assign_player_value(:playerTwo, :paddleX, new().playerTwo.paddleX)
+    |> assign_player_value(:playerTwo, :paddleY, new().playerTwo.paddleY)
   end
 
   def client_view(game) do
@@ -62,18 +68,18 @@ defmodule BreakoutPong.Game do
       #TODO, this is a giant mess that will have to be fixed
       isLobby: game.isLobby,
       lobbyList: game.lobbyList,
-      player1: game.player1,
-      player2: game.player2,
-      ball1x: game.ball1x,
-      ball1y: game.ball1y,
-      ball2x: game.ball2x,
-      ball2y: game.ball2y,
-      player1x: Map.get(game, :player1x),
-      player1y: Map.get(game, :player1y),
-      player2x: Map.get(game, :player2x),
-      player2y: Map.get(game, :player2y),
-      player1score: Map.get(game, :player1score),
-      player2score: Map.get(game, :player2score),
+      player1: game.playerOne.name,
+      player2: game.playerTwo.name,
+      ball1x: game.playerOne.ballX,
+      ball1y: game.playerOne.ballY,
+      ball2x: game.playerTwo.ballX,
+      ball2y: game.playerTwo.ballY,
+      player1x: game.playerOne.paddleX,
+      player1y: game.playerOne.paddleY,
+      player2x: game.playerTwo.paddleX,
+      player2y: game.playerTwo.paddleY,
+      player1score: game.playerOne.score,
+      player2score: game.playerTwo.score,
       windowWidth: Map.get(game, :windowWidth),
       windowHeight: Map.get(game, :windowHeight),
     }
@@ -81,20 +87,20 @@ defmodule BreakoutPong.Game do
 
   def start_game(game) do
     if length(game.lobbyList) >= 2 do
-      [player1 | popList] = game.lobbyList
-      [player2 | newLobbyList] = popList
+      [playerOneName | popList] = game.lobbyList
+      [playerTwoName | newLobbyList] = popList
       game
-      |> Map.put(:player1, player1)
-      |> Map.put(:player2, player2)
+      |> assign_player_value(:playerOne, :name, playerOneName)
+      |> assign_player_value(:playerTwo, :name, playerTwoName)
       |> Map.put(:lobbyList, newLobbyList)
       |> Map.put(:isLobby, false)
     else
       # TODO This is strictly for debugging and will have to be removed at some
       # point before deployment, hence the awkward else if statement
       if length(game.lobbyList) == 1 do
-        [player1 | newLobbyList] = game.lobbyList
+        [playerOneName | newLobbyList] = game.lobbyList
         game
-        |> Map.put(:player1, player1)
+        |> assign_player_value(:playerOne, :name, playerOneName)
         |> Map.put(:lobbyList, newLobbyList)
         |> Map.put(:isLobby, false)
       else
@@ -116,46 +122,49 @@ defmodule BreakoutPong.Game do
   end
 
   def ballHitGoal?(game) do
-    game.ball1x > game.windowWidth
-    || game.ball1x < 0
-    || game.ball2x > game.windowWidth
-    || game.ball2x < 0
+    game.playerOne.ballX > game.windowWidth
+    || game.playerOne.ballX < 0
+    || game.playerTwo.ballX > game.windowWidth
+    || game.playerTwo.ballX < 0
   end
 
   def move_player_ball(game, playerNum) do
     tempBall = fn (game, playerNum) ->
-        if playerNum == 1 do
+      cond do
+        playerNum == 1 ->
           %{
-            x: game.ball1x + game.ball1SpeedX,
-            y: game.ball1y + game.ball1SpeedY,
-            speedX: game.ball1SpeedX,
-            speedY: game.ball1SpeedY,
+            x: game.playerOne.ballX + game.playerOne.ballSpeedX,
+            y: game.playerOne.ballY + game.playerOne.ballSpeedY,
+            speedX: game.playerOne.speedX,
+            speedY: game.playerOne.speedY,
           }
-        else
+        playerNum == 2 ->
           %{
-            x: game.ball2x + game.ball2SpeedX,
-            y: game.ball2y + game.ball2SpeedY,
-            speedX: game.ball2SpeedX,
-            speedY: game.ball2SpeedY,
+            x: game.playerTwo.ballX + game.playerTwo.ballSpeedX,
+            y: game.playerTwo.ballY + game.playerTwo.ballSpeedY,
+            speedX: game.playerTwo.speedX,
+            speedY: game.playerTwo.speedY,
           }
-        end
+        true ->
+          "Error, how did you get here?"
       end
+    end
 
     cond do
       ballHitFloorOrCeiling?(game, tempBall) ->
         IO.puts "ball hit cieling"
         tempBall = tempBall
-        |> Map.put(:speedY, -1 * tempBall.speedY)
-        # TODO Change this if bad things happen to the ball
-        |> Map.put(:y, tempBall.y + 2 * tempBall.speedY)
+                   |> Map.put(:speedY, -1 * tempBall.speedY)
+          # TODO Change this if bad things happen to the ball
+                   |> Map.put(:y, tempBall.y + 2 * tempBall.speedY)
         game
         |> set_new_player_ball(tempBall, playerNum)
       ballHitPaddle?(game, tempBall) ->
         IO.puts "Ball hit paddle"
         tempBall = tempBall
-        |> Map.put(:speedX, -1 * tempBall.speedX)
-        |> Map.put(:x, tempBall.x + 2 * tempBall.speedX)
-        |> set_new_player_ball(tempBall, playerNum)
+                   |> Map.put(:speedX, -1 * tempBall.speedX)
+                   |> Map.put(:x, tempBall.x + 2 * tempBall.speedX)
+                   |> set_new_player_ball(tempBall, playerNum)
       ballHitBlock?(game, tempBall) ->
         IO.puts "ball hit block"
         game
@@ -176,34 +185,36 @@ defmodule BreakoutPong.Game do
 
   def set_goal_score(game) do
     game
-    |> Map.put(:player1score,
-      get_score(game.player1score, constants().goalScoreEnemyPoints,
-        game.ball1x, game.windowWidth))
-    |> Map.put(:player1score,
-      get_score(game.player1score, constants().goalScoreSelfPoints,
-        0, game.ball1x))
-    # TODO abstract this disgusting code
-    |> Map.put(:player2score,
-      get_score(game.player2score, constants.goalScoreSelfPoints,
-        game.ball2x,game.windowWidth))
-    |> Map.put(:player2score,
-      get_score(game.player2score, constants.goalScoreEnemyPoints,
-        0, game.ball2x))
+    |> assign_player_value(:playerOne, :score,
+         get_score(game.playerOne.score, constants().goalScoreEnemyPoints,
+           game.playerOne.ballX, game.windowWidth))
+    |> assign_player_value(:playerOne, :score,
+         get_score(game.playerOne.score, constants().goalScoreSelfPoints,
+           0, game.playerOne.ballX))
+    |> assign_player_value(:playerTwo, :score,
+         get_score(game.playerTwo.score, constants.goalScoreSelfPoints,
+           game.playerTwo.ballX,game.windowWidth))
+    |> assign_player_value(:playerTwo, :score,
+         get_score(game.playerTwo.score, constants.goalScoreEnemyPoints,
+           0, game.playerTwo.ballX))
   end
 
   def set_new_player_ball(game, tempBall, playerNum) do
-    if playerNum == 1 do
-      game
-      |> Map.put(:ball1x, tempBall.x)
-      |> Map.put(:ball1y, tempBall.y)
-      |> Map.put(:ball1SpeedX, tempBall.speedX)
-      |> Map.put(:ball1SpeedY, tempBall.speedY)
-    else
-      game
-      |> Map.put(:ball2x, tempBall.x)
-      |> Map.put(:ball2y, tempBall.y)
-      |> Map.put(:ball2SpeedX, tempBall.speedX)
-      |> Map.put(:ball2SpeedY, tempBall.speedY)
+    cond do
+      playerNum == 1 ->
+        game
+        |> assign_player_value(:playerOne, :ballX, tempBall.x)
+        |> assign_player_value(:playerOne, :ballY, tempBall.y)
+        |> assign_player_value(:playerOne, :ballSpeedX, tempBall.speedX)
+        |> assign_player_value(:playerOne, :ballSpeedY, tempBall.speedY)
+      playerNum == 2 ->
+        game
+        |> assign_player_value(:playerTwo, :ballX, tempBall.x)
+        |> assign_player_value(:playerTwo, :ballY, tempBall.y)
+        |> assign_player_value(:playerTwo, :ballSpeedX, tempBall.speedX)
+        |> assign_player_value(:playerTwo, :ballSpeedY, tempBall.speedY)
+      true ->
+        game
     end
   end
 
@@ -211,19 +222,15 @@ defmodule BreakoutPong.Game do
     ball.y > game.windowHeight || ball.y < 0
   end
 
-  def ballHitGoal?(game, ball) do
-    ball.x > game.windowWidth || ball.x < 0
-  end
-
   def ballHitPaddle?(game, ball) do
-    (ball.x < game.player1x + constants().paddleWidth
-    && ball.x > game.player1x
-    && ball.y < game.player1y + constants().paddleHeight
-    && ball.y > game.player1y)
-    || (ball.x < game.player1x + constants().paddleWidth
-    && ball.x > game.player1x
-    && ball.y < game.player1y + constants().paddleHeight
-    && ball.y > game.player1y)
+    (ball.x < game.playerOne.paddleX + constants().paddleWidth
+     && ball.x > game.playerOne.paddleX
+     && ball.y < game.playerOne.paddleY + constants().paddleHeight
+     && ball.y > game.playerOne.paddleY)
+    || (ball.x < game.playerTwo.paddleX + constants().paddleWidth
+        && ball.x > game.playerTwo.paddleX
+        && ball.y < game.playerTwo.paddleY + constants().paddleHeight
+        && ball.y > game.playerTwo.paddleY)
   end
 
   def ballHitBlock?(game, ball) do
@@ -231,27 +238,19 @@ defmodule BreakoutPong.Game do
     false
   end
 
-  # TODO: this is the function that should be called after leaving lobby to set player and state variables.  We can also use this to restart the game if we re-initialize everything else
-  def initialize_game(game) do
-    Map.put(game,:isLobby, false) # mark as game, not lobby
-    Map.put(Game, :player1, Enum.at(Map.get(game, :lobbyList), 0)) # save the players, in order they joined
-    Map.put(Game, :player2, Enum.at(Map.get(game, :lobbyList), 1)) # save the players, in order they joined
-
-  end
-
-  def add_to_lobby(game, player) do
-    if Enum.member?(game.lobbyList, player) do
+  def add_to_lobby(game, playerName) do
+    if Enum.member?(game.lobbyList, playerName) do
       game
     else
       game
-      |> Map.put(:lobbyList, game.lobbyList ++ [player])
+      |> Map.put(:lobbyList, game.lobbyList ++ [playerName])
     end
   end
 
-  def remove_from_lobby(game, player) do
-    if Enum.member?(game.lobbyList, player) do
+  def remove_from_lobby(game, playerName) do
+    if Enum.member?(game.lobbyList, playerName) do
       game
-      |> Map.put(:lobbyList, game.lobbyList ++ [player])
+      |> Map.put(:lobbyList, game.lobbyList ++ [playerName])
     else
       game
     end
@@ -260,57 +259,22 @@ defmodule BreakoutPong.Game do
   def move_paddle(game, player_num, move_dist) do
     cond do
       player_num == 1
-      && (game.player1y + move_dist < Map.get(game, :windowHeight) - 60)
-      && (game.player1y + move_dist >= 0) ->
+        ## TODO Get rid of these magic numbers 60
+      && (game.playerOne.paddleY + move_dist < game.windowHeight - 60)
+      && (game.playerOne.paddleY + move_dist >= 0) ->
+        newPaddleY = game.playerOne.paddleY + move_dist
         game
-        |> Map.put(:player1y, game.player1y + move_dist)
+        |> assign_player_value(:playerOne, :paddleY, newPaddleY)
       player_num == 2
-      && (game.player2y + move_dist < Map.get(game, :windowHeight) - 60)
-      && (game.player2y + move_dist >= 0) ->
+        ## TODO Get rid of these magic numbers 60
+      && (game.playerTwo.paddleY + move_dist < game.windowHeight - 60)
+      && (game.playerTwo.paddleY + move_dist >= 0) ->
+        newPaddleY = game.playerTwo.paddleY + move_dist
         game
-        |> Map.put(:player2y, game.player2y + move_dist)
+        |> assign_player_value(:playerTwo, :paddleY, newPaddleY)
       true ->
+        IO.inspect("cond fell through")
         game
     end
-  end
-
-
-  ################ Old functions below #######################
-
-  def skeleton(word, guesses) do
-    Enum.map word, fn cc ->
-      if Enum.member?(guesses, cc) do
-        cc
-      else
-        "_"
-      end
-    end
-  end
-
-  def guess(game, letter) do
-    if letter == "z" do
-      raise "That's not a real letter"
-    end
-
-    gs = game.guesses
-    |> MapSet.new()
-    |> MapSet.put(letter)
-    |> MapSet.to_list
-
-    Map.put(game, :guesses, gs)
-  end
-
-  def max_guesses do
-    10
-  end
-
-  def next_word do
-    words = ~w(
-      horse snake jazz violin
-      muffin cookie pizza sandwich
-      house train clock
-      parsnip marshmallow
-    )
-    Enum.random(words)
   end
 end
