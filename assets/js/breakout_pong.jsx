@@ -8,7 +8,7 @@ export default function breakout_pong_init(root, channel) {
 }
 
 // Global used for the movement of the paddle
-var PADDLE_MOVE = 40;
+var PADDLE_MOVE = 80;
 
 // Client-Side state for BreakoutPong is:
 // {
@@ -165,36 +165,46 @@ class BreakoutPong extends React.Component {
     ctx.stroke();
 
     // Blocks rendered down here
-    var colors = ["#FFFFFF", "#aaf9ad", "#70f06e","#59dd56","#2bc52e"]
+    var colors = ["#FFFFFF", "#bbffbd", "#70f06e","#4ebf4f","#09960f"]
     var lines = ["#FFFFFF", "#000000", "#000000","#000000","#000000"]
     var index;
     console.log(this.state.blocks);
+    ctx.lineWidth = 3;
     for (index = 0; index < this.state.blocks.length; ++index) {
       ctx.fillStyle = colors[this.state.blocks[index].hp];
-      ctx.strokeStyle = colors[this.state.blocks[index].hp];
+      ctx.strokeStyle = lines[this.state.blocks[index].hp];
       ctx.strokeRect(this.state.blocks[index].x, this.state.blocks[index].y, 40, 100)
       ctx.fillRect(this.state.blocks[index].x, this.state.blocks[index].y, 40, 100)
     }
 
 
     // Ball Graphics
+    ctx.lineWidth = 1;
     ctx.fillStyle = "#002eff";
-    ctx.beginPath();
-    ctx.arc(this.state.ball1x, this.state.ball1y, 8, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.fillStyle = "#00fff8";
     ctx.beginPath();
     ctx.arc(this.state.ball2x, this.state.ball2y, 8, 0, 2 * Math.PI);
     ctx.fill();
+    ctx.beginPath();
+    ctx.arc(this.state.ball2x, this.state.ball2y, 8, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fillStyle = "#00fff8";
+    ctx.beginPath();
+    ctx.arc(this.state.ball1x, this.state.ball1y, 8, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(this.state.ball1x, this.state.ball1y, 8, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.lineWidth = 2;
+
 
 
     // Render win screen over game, if score indicates player has won
-    if (this.state.player1score > 100 || this.state.player2score > 100) {
+    if (this.state.player1score > 50 || this.state.player2score > 50) {
 
       // Determine which player won
       var winner;
       var loser
-      if (this.state.player1score > 100) {
+      if (this.state.player1score > 50) {
         winner = this.state.player1;
         loser = this.state.player2;
       } else {
@@ -214,20 +224,20 @@ class BreakoutPong extends React.Component {
       ctx.font = "40px Courier"
       ctx.fillText(winner + " wins!", 200, 200);
       ctx.font = "30px Courier"
-      ctx.fillText("(Sorry " + loser, 200, 250);
-      ctx.fillStyle = "#c2e5ff";
+      ctx.fillText("(Sorry " + loser + ")", 200, 250);
+      ctx.fillStyle = "#617282";
       ctx.font = "20px Courier"
-      ctx.fillText("Click here to restart.", 200, 400);
+      ctx.fillText("Click here to restart.", 270, 400);
     }
     return canvas;
   }
 
   player_win_restart() {
-    if (this.state.player1score > 100 || this.state.player2score > 100) {
+    if (this.state.player1score > 50 || this.state.player2score > 50) {
       // determine winner
       var winner;
       var loser;
-      if (this.state.player1score > 100) {
+      if (this.state.player1score > 50) {
         winner = this.state.player1;
         loser = this.state.player2;
       } else {
