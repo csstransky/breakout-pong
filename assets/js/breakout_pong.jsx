@@ -96,7 +96,9 @@ class BreakoutPong extends React.Component {
     ctx.clearRect(0, 0, this.state.windowWidth, this.state.windowHeight);
     ctx.strokeRect(0,0, this.state.windowWidth, this.state.windowHeight);
     ctx.fillRect(this.state.player2x, this.state.player2y, 20, 110);
+    ctx.fillStyle = "#00fff8";
     ctx.fillRect(this.state.player1x, this.state.player1y, 20, 110);
+    ctx.fillStyle = "#ffba31";
     ctx.font = "20px Courier"
     ctx.fillText(this.state.player1, 100, 20);
     ctx.fillText(this.state.player2, 500, 20);
@@ -120,9 +122,13 @@ class BreakoutPong extends React.Component {
 
 
     // Ball Graphics
-    ctx.fillStyle = "#06ff18";
+    ctx.fillStyle = "#002eff";
     ctx.beginPath();
     ctx.arc(this.state.ball1x, this.state.ball1y, 8, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.fillStyle = "#00fff8";
+    ctx.beginPath();
+    ctx.arc(this.state.ball2x, this.state.ball2y, 8, 0, 2 * Math.PI);
     ctx.fill();
 
     return canvas;
