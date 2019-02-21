@@ -27,9 +27,9 @@ class BreakoutPong extends React.Component {
       player1: "",
       player2: "",
       ball1x: 100,
-      ball1y: 100,
-      ball2x: 200,
-      ball2y: 200,
+      ball1y: 120,
+      ball2x: 700,
+      ball2y: 120,
       player1x: 10,
       player1y: 5,
       player2x: 770,
@@ -165,7 +165,7 @@ class BreakoutPong extends React.Component {
     ctx.stroke();
 
     // Blocks rendered down here
-    var colors = ["#FFFFFF", "#bbffbd", "#70f06e","#4ebf4f","#09960f"]
+    var colors = ["#FFFFFF", "#aaffa3", "#4cd647","#00a608","#00aa0b"]
     var lines = ["#FFFFFF", "#000000", "#000000","#000000","#000000"]
     var index;
     console.log(this.state.blocks);

@@ -25,7 +25,7 @@ defmodule BreakoutPong.Game do
         paddleX: 10,
         paddleY: 5,
         ballX: 100,
-        ballY: 100,
+        ballY: 120,
         ballSpeedX: 4,
         ballSpeedY: 4,
       },
@@ -34,10 +34,10 @@ defmodule BreakoutPong.Game do
         score: 0,
         paddleX: 770,
         paddleY: 5,
-        ballX: 570,
-        ballY: 200,
-        ballSpeedX: 0,
-        ballSpeedY: 0,
+        ballX: 700,
+        ballY: 120,
+        ballSpeedX: -4,
+        ballSpeedY: 4,
       },
       windowHeight: 600,
       windowWidth: 800,
@@ -187,10 +187,10 @@ defmodule BreakoutPong.Game do
     ball = get_new_player_ball(game, playerNum)
     blockListIndex = Enum.find_index(game.blocks, fn block ->
       block.hp > 0
-      && block.x + constants().blockWidth >= ball.x + constants().ballRadius
-      && block.x <= ball.x - constants().ballRadius
-      && block.y + constants().blockHeight >= ball.y + constants().ballRadius
-      && block.y <= ball.y - constants().ballRadius
+      && block.x + constants().blockWidth >= ball.x - constants().ballRadius
+      && block.x <= ball.x + constants().ballRadius
+      && block.y + constants().blockHeight >= ball.y - constants().ballRadius
+      && block.y <= ball.y + constants().ballRadius
     end)
     IO.inspect("HERE'S THAT INDEX")
     IO.inspect(blockListIndex)
@@ -239,11 +239,14 @@ defmodule BreakoutPong.Game do
   end
 
   def bounce_off_block_top?(ball, block) do
+
+
+
     # TODO Mess with these buffers until it looks right
-    sideBuffer = 4
+    sideBuffer = 8
     topBuffer = 10
-    (ball.x <= block.x + constants().blockWidth - sideBuffer
-      && ball.x >= block.x + sideBuffer)
+    (block.x + constants().blockWidth - sideBuffer >= ball.x - constants().ballRadius
+     && block.x + sideBuffer <= ball.x + constants().ballRadius)
     && (ball.y <= block.y + topBuffer
         && ball.y + constants().ballRadius >= block.y)
       || (ball.y - constants.ballRadius <= block.y + constants().blockHeight
@@ -361,10 +364,10 @@ defmodule BreakoutPong.Game do
     ball = get_new_player_ball(game, playerNum)
     Enum.any?(game.blocks, fn block ->
       block.hp > 0
-      && block.x + constants().blockWidth >= ball.x + constants().ballRadius
-      && block.x <= ball.x - constants().ballRadius
-      && block.y + constants().blockHeight >= ball.y + constants().ballRadius
-      && block.y <= ball.y - constants().ballRadius
+      && block.x + constants().blockWidth >= ball.x - constants().ballRadius
+      && block.x <= ball.x + constants().ballRadius
+      && block.y + constants().blockHeight >= ball.y - constants().ballRadius
+      && block.y <= ball.y + constants().ballRadius
     end)
   end
 

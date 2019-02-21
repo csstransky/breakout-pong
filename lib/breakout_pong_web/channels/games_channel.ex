@@ -63,7 +63,7 @@ defmodule BreakoutPongWeb.GamesChannel do
 
     player = socket.assigns[:player]
     update_players(name, player)
-    
+
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 
