@@ -14,6 +14,7 @@ defmodule BreakoutPong.Application do
       # {BreakoutPong.Worker, arg},
       BreakoutPong.GameSup,
       BreakoutPong.BackupAgent,
+      BreakoutPong.GameServer,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

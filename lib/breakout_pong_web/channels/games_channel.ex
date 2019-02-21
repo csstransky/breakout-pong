@@ -47,6 +47,8 @@ defmodule BreakoutPongWeb.GamesChannel do
     #BreakoutPong.GameServer.move_balls()
     player = socket.assigns[:player]
     update_players(name, player)
+
+    BreakoutPong.GameServer.move_balls(name)
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 
