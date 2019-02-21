@@ -20,7 +20,6 @@ defmodule BreakoutPong.GameServer do
     # Will have to change this later so it doesn't create a new game if the game
     # exists, but the player doesn't
     game = BreakoutPong.BackupAgent.get(name) || BreakoutPong.Game.new()
-    IO.inspect(name)
     IO.inspect("genserver name above")
     GenServer.start_link(__MODULE__, game, name: reg(name))
   end

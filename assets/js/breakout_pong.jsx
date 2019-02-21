@@ -24,6 +24,7 @@ class BreakoutPong extends React.Component {
     this.state = {
       isLobby: true,
       lobbyList: ["Loading lobby..."],
+      winScore: 50,
       player1: "",
       player2: "",
       winScore: 50,
@@ -246,7 +247,7 @@ class BreakoutPong extends React.Component {
         loser = this.state.player1;
       }
 
-      this.channel.push("play_next_game", {winner: winner, loser: loser})
+      this.channel.push("play_next_game")
         .receive("ok", resp => {
           console.log("Game has started", resp.game)
           this.setState(resp.game);

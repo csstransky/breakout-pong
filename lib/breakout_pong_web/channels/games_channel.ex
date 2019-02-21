@@ -41,23 +41,26 @@ defmodule BreakoutPongWeb.GamesChannel do
     # TODO Should test in the fut|> Map.put(:isLobby, false)ure if retreiving the game from socket or
     # BackupAgent makes more sense here. Retreiving from socket for now.
     #game = Game.start_game(BackupAgent.get(name))
-    game = Game.start_game(socket.assigns[:game])
-    socket = assign(socket, :game, game)
-    BackupAgent.put(name, game)
+    game = BackupAgent.get(name) || socket.assigns[:game]
+    if length(game.lobbyList) >= 2 do
+      game = Game.start_game(game)
+      socket = assign(socket, :game, game)
+      BackupAgent.put(name, game)
 
-    ## TODO Finish this function
-    #BreakoutPong.GameServer.move_balls()
-    player = socket.assigns[:player]
-    update_players(name, player)
+      player = socket.assigns[:player]
+      update_players(name, player)
 
-    BreakoutPong.GameServer.start(name)
-    BreakoutPong.GameServer.move_balls(name)
+      BreakoutPong.GameServer.start(name)
+      BreakoutPong.GameServer.move_balls(name)
+      {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
+    end
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 
-  def handle_in("play_next_game", %{"winner" => winner, "loser" => loser}, socket) do
+  def handle_in("play_next_game", _map, socket) do
     name = socket.assigns[:name]
-    game = Game.play_next_game(socket.assigns[:game], winner, loser)
+
+    game = Game.play_next_game(BackupAgent.get(name))
     socket = assign(socket, :game, game)
     BackupAgent.put(name, game)
 
@@ -92,7 +95,6 @@ defmodule BreakoutPongWeb.GamesChannel do
     BackupAgent.put(name, game)
 
     update_players(name, player)
-    IO.inspect(game)
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 
@@ -101,8 +103,6 @@ defmodule BreakoutPongWeb.GamesChannel do
     name = socket.assigns[:name]
     # TODO Find a way not to send updates to the sender of them
     if player && name do
-      IO.puts("This player is RECEIVING update:")
-      IO.puts(player)
       push socket, "update", Game.client_view(game)
       {:noreply, socket}
     else

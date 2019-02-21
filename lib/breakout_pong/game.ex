@@ -23,9 +23,9 @@ defmodule BreakoutPong.Game do
         name: "",
         score: 0,
         paddleX: 10,
-        paddleY: 5,
-        ballX: 100,
-        ballY: 120,
+        paddleY: 245,
+        ballX: 50,
+        ballY: 300,
         ballSpeedX: 4,
         ballSpeedY: 4,
       },
@@ -33,14 +33,15 @@ defmodule BreakoutPong.Game do
         name: "",
         score: 0,
         paddleX: 770,
-        paddleY: 5,
-        ballX: 700,
-        ballY: 120,
+        paddleY: 245,
+        ballX: 750,
+        ballY: 300,
         ballSpeedX: -4,
-        ballSpeedY: 4,
+        ballSpeedY: -4,
       },
       windowHeight: 600,
       windowWidth: 800,
+      winScore: 50,
       blocks: init_blocks(),
     }
   end
@@ -87,8 +88,8 @@ defmodule BreakoutPong.Game do
       windowWidth: Map.get(game, :windowWidth),
       windowHeight: Map.get(game, :windowHeight),
       blocks: Map.get(game, :blocks),
+      winScore: game.winScore
     }
-    x
   end
 
   def start_game(game) do
@@ -97,21 +98,14 @@ defmodule BreakoutPong.Game do
       [playerTwoName | newLobbyList] = popList
       game
       |> assign_player_value(:playerOne, :name, playerOneName)
+      |> assign_player_value(:playerOne, :score, new().playerOne.score)
       |> assign_player_value(:playerTwo, :name, playerTwoName)
+      |> assign_player_value(:playerTwo, :score, new().playerTwo.score)
+      |> reset_positions()
       |> Map.put(:lobbyList, newLobbyList)
       |> Map.put(:isLobby, false)
     else
-      # TODO This is strictly for debugging and will have to be removed at some
-      # point before deployment, hence the awkward else if statement
-      if length(game.lobbyList) == 1 do
-        [playerOneName | newLobbyList] = game.lobbyList
-        game
-        |> assign_player_value(:playerOne, :name, playerOneName)
-        |> Map.put(:lobbyList, newLobbyList)
-        |> Map.put(:isLobby, false)
-      else
-        game
-      end
+      game
     end
   end
 
@@ -136,6 +130,9 @@ defmodule BreakoutPong.Game do
 
   def move_player_ball(game, playerNum) do
     cond do
+      (game.playerOne.score >= game.winScore)
+      || (game.playerTwo.score >= game.winScore) ->
+        game
       ballHitFloorOrCeiling?(game, playerNum) ->
         IO.puts "Ball hit floor or ceiling."
         IO.inspect(playerNum)
@@ -192,29 +189,19 @@ defmodule BreakoutPong.Game do
       && block.y + constants().blockHeight >= ball.y - constants().ballRadius
       && block.y <= ball.y + constants().ballRadius
     end)
-    IO.inspect("HERE'S THAT INDEX")
-    IO.inspect(blockListIndex)
     block = Enum.at(game.blocks, blockListIndex)
     bouncedBall = bounce_off_block_new_ball(ball, block)
     block = block
     |> Map.put(:hp, block.hp - 1)
-      IO.inspect("LOOK HERE CIRSTINASFDKN")
-      IO.inspect(ball)
-      IO.inspect(playerNum)
-    IO.inspect(block)
-    IO.inspect(bouncedBall)
     if block.hp <= 0 do
       # TODO Use better math to get this working in a linear fashion
       bouncedBall = bouncedBall
       |> Map.put(:speedX, Kernel.round(bouncedBall.speedX * constants().speedChange))
       |> Map.put(:speedY, Kernel.round(bouncedBall.speedY * constants().speedChange))
-      IO.inspect(bouncedBall)
-      game = game
+      game
       |> set_block_score(playerNum)
       |> set_new_player_ball(bouncedBall, playerNum)
       |> Map.put(:blocks, List.replace_at(game.blocks, blockListIndex, block))
-      IO.inspect(game)
-      game
     else
       game
       |> set_new_player_ball(bouncedBall, playerNum)
@@ -239,10 +226,6 @@ defmodule BreakoutPong.Game do
   end
 
   def bounce_off_block_top?(ball, block) do
-
-
-
-    # TODO Mess with these buffers until it looks right
     sideBuffer = 8
     topBuffer = 10
     (block.x + constants().blockWidth - sideBuffer >= ball.x - constants().ballRadius
@@ -295,7 +278,7 @@ defmodule BreakoutPong.Game do
         |> assign_player_value(:playerOne, :score, game.playerOne.score + constants().blockPoints)
       playerNum == 2 ->
         game
-        |> assign_player_value(:playerTwo, :score, game.playerOne.score + constants().blockPoints)
+        |> assign_player_value(:playerTwo, :score, game.playerTwo.score + constants().blockPoints)
       true ->
         IO.inspect("A ghost has scored.")
     end
@@ -429,6 +412,9 @@ defmodule BreakoutPong.Game do
 
   def move_paddle(game, playerNum, move_dist) do
     cond do
+      (game.playerOne.score >= game.winScore)
+      || (game.playerTwo.score >= game.winScore) ->
+        game
       playerNum == 1
         ## TODO Get rid of these magic numbers 60 (80 actually)
       && (game.playerOne.paddleY + move_dist < game.windowHeight - 80)
@@ -449,22 +435,23 @@ defmodule BreakoutPong.Game do
     end
   end
 
-  def play_next_game(game, winner, loser) do
-    if (Kernel.length(game.lobbyList) >=1) do
-      lobby = game.lobbyList
-      # Modify lobby list appropriately
-      lobby
-      |> List.insert_at(0, winner)
-      |> List.insert_at(-1, loser)
-      # Drop lobby list into game
+  def play_next_game(game) do
+    if game.playerOne.score > game.playerTwo.score do
+      game = game
+      |> add_to_lobby(game.playerTwo.name)
+      |> add_to_lobby(game.playerOne.name)
+      |> assign_player_value(:playerOne, :score, new().playerOne.score)
+      |> assign_player_value(:playerTwo, :score, new().playerTwo.score)
+      |> Map.put(:isLobby, true)
+      IO.inspect(game)
       game
-      |> assign_player_value(:playerOne, :score, 0)
-      |> assign_player_value(:playerTwo, :score, 0)
-      |> Map.put(:lobbyList, lobby)
-      # Call start game again
-      start_game(game)
     else
-      start_game(game)
+      game
+      |> add_to_lobby(game.playerOne.name)
+      |> add_to_lobby(game.playerTwo.name)
+      |> assign_player_value(:playerOne, :score, new().playerOne.score)
+      |> assign_player_value(:playerTwo, :score, new().playerTwo.score)
+      |> Map.put(:isLobby, true)
     end
   end
 end
