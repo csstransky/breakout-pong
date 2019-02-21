@@ -250,8 +250,13 @@ class BreakoutPong extends React.Component {
     } else {
       return (
         <div>
-          <h4>Click below to play...</h4>
+          <h4>Click below to play.</h4>
           <canvas ref="canvas" tabIndex={-1} width={800} height={600} onKeyDown={this.on_key.bind(this)}/>
+          <h4>Rules:</h4>
+          <h5>Use the up and down (or left and right) arrow keys to move your paddle</h5>
+          <h5>Points are awarded for breaking blocks (1 pt) and scoring on your opponent (5 pts)</h5>
+          <h5>You will loose points for letting your own ball pass your own goal line</h5>
+          <h5>The first player to score 20 points will will</h5>
         </div>
       )
     }
