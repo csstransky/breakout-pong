@@ -16,18 +16,13 @@ import $ from "jquery";
 //
 // Local files can be imported directly using relative paths, for example:
 import socket from "./socket";
-import hangman_init from "./hangman";
+console.log(socket)
+import breakout_pong_init from "./breakout_pong";
 
 $(() => {
   let root = document.getElementById('root');
   if (root) {
-    let channel = socket.channel("games:" + window.gameName, {});
-    hangman_init(root, channel);
+    let channel = socket.channel("games:" + window.gameName, {user: window.playerName});
+    breakout_pong_init(root, channel);
   }
 });
-
-
-
-
-
-

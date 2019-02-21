@@ -8,11 +8,11 @@
 use Mix.Config
 
 # Configures the endpoint
-config :hangman, HangmanWeb.Endpoint,
+config :breakout_pong, BreakoutPongWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "TUG39sPQyh0pkbUPEg0PIDv2J0iZsUJTmkiemFU9FJUF3tJQEJir52QfTV+pjX86",
-  render_errors: [view: HangmanWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Hangman.PubSub, adapter: Phoenix.PubSub.PG2]
+  render_errors: [view: BreakoutPongWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: BreakoutPong.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,

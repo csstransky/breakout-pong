@@ -1,4 +1,4 @@
-defmodule HangmanWeb.ConnCase do
+defmodule BreakoutPongWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -19,10 +19,10 @@ defmodule HangmanWeb.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
-      alias HangmanWeb.Router.Helpers, as: Routes
+      alias BreakoutPongWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
-      @endpoint HangmanWeb.Endpoint
+      @endpoint BreakoutPongWeb.Endpoint
     end
   end
 

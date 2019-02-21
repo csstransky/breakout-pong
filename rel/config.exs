@@ -59,8 +59,8 @@ end
 # when running `mix release`, the first release in the file
 # will be used by default
 
-release :hangman do
-  set version: current_version(:hangman)
+release :breakout_pong do
+  set version: current_version(:breakout_pong)
   set applications: [
     :runtime_tools
   ]
