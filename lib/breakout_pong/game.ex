@@ -1,7 +1,4 @@
 defmodule BreakoutPong.Game do
-  #Width of paddle 20
-  #Height of paddle 110
-  #Ball radius 8
   def constants do
     %{
       paddleWidth: 20,
@@ -10,6 +7,10 @@ defmodule BreakoutPong.Game do
       goalScoreEnemyPoints: 10,
       goalScoreSelfPoints: 5,
       blockPoints: 1,
+      winScore: 100,
+      speedChange: 1,
+      blockWidth: 40,
+      blockHeight: 100,
     }
   end
 
@@ -40,7 +41,7 @@ defmodule BreakoutPong.Game do
       },
       windowHeight: 600,
       windowWidth: 800,
-      blocks: [%{}],
+      blocks: init_blocks(),
     }
   end
 
@@ -144,6 +145,7 @@ defmodule BreakoutPong.Game do
       ballHitBlock?(game, playerNum) ->
         IO.puts "Ball hit block."
         game
+        |> bounce_off_block(playerNum)
       true ->
         game
         |> no_bounce_move(playerNum)
@@ -174,6 +176,11 @@ defmodule BreakoutPong.Game do
     |> Map.put(:x, tempBall.x + 2 * reverseSpeed)
     game
     |> set_new_player_ball(tempBall, playerNum)
+  end
+
+  def bounce_off_block(game, playerNum) do
+    #TODO finish this for REAL TODO TODO
+    game
   end
 
   def get_score(score, pointsScored, boundary1, boundary2) do
@@ -260,8 +267,46 @@ defmodule BreakoutPong.Game do
 
   def ballHitBlock?(game, playerNum) do
     ball = get_new_player_ball(game, playerNum)
-    ## TODO write this function when we get blocks working
-    false
+    Enum.any?(game.blocks, fn block ->
+      block.hp > 0
+      && block.x + constants().blockWidth > ball.x + constants().ballRadius
+      && block.x < ball.x - constants().ballRadius
+      && block.y + constants().blockHeight > ball.y + constants().ballRadius
+      && block.y < ball.y - constants().ballRadius
+    end)
+  end
+
+  def init_blocks() do
+    [ %{x: 310, y: 1, hp: 1},
+      %{x: 350, y: 1, hp: 2},
+      %{x: 390, y: 1, hp: 4},
+      %{x: 430, y: 1, hp: 2},
+      %{x: 470, y: 1, hp: 1},
+      %{x: 310, y: 100, hp: 1},
+      %{x: 350, y: 100, hp: 2},
+      %{x: 390, y: 100, hp: 4},
+      %{x: 430, y: 100, hp: 2},
+      %{x: 470, y: 100, hp: 1},
+      %{x: 310, y: 200, hp: 1},
+      %{x: 350, y: 200, hp: 2},
+      %{x: 390, y: 200, hp: 4},
+      %{x: 430, y: 200, hp: 2},
+      %{x: 470, y: 200, hp: 1},
+      %{x: 310, y: 300, hp: 1},
+      %{x: 350, y: 300, hp: 2},
+      %{x: 390, y: 300, hp: 4},
+      %{x: 430, y: 300, hp: 2},
+      %{x: 470, y: 300, hp: 1},
+      %{x: 310, y: 400, hp: 1},
+      %{x: 350, y: 400, hp: 2},
+      %{x: 390, y: 400, hp: 4},
+      %{x: 430, y: 400, hp: 2},
+      %{x: 470, y: 400, hp: 1},
+      %{x: 310, y: 499, hp: 1},
+      %{x: 350, y: 499, hp: 2},
+      %{x: 390, y: 499, hp: 4},
+      %{x: 430, y: 499, hp: 2},
+      %{x: 470, y: 499, hp: 1}]
   end
 
   # TODO Find a way to just get the damn name from the gen server
