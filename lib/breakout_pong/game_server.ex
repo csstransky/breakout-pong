@@ -40,14 +40,14 @@ defmodule BreakoutPong.GameServer do
 
   def move_balls(name) do
     GenServer.call(reg(name), {:move_balls, name})
-    timer = Process.send_after(self(), :move_balls, 1_000)
   end
 
   def handle_call({:move_balls, name}, _from, game) do
     game = BreakoutPong.BackupAgent.get(name)
     game = BreakoutPong.Game.move_balls(game)
+    BreakoutPong.BackupAgent.put(name, game)
     BreakoutPongWeb.Endpoint.broadcast!("games:#{name}", "update_players", game)
-    timer = Process.send_after(self(), :move_balls, 1_000)
+    timer = Process.send_after(self(), :move_balls, 50)
     {:reply, name, game}
   end
 
@@ -57,8 +57,9 @@ defmodule BreakoutPong.GameServer do
     # name = GenServer.whereis(self())
     game = BreakoutPong.BackupAgent.get(game.name)
     game = BreakoutPong.Game.move_balls(game)
+    BreakoutPong.BackupAgent.put(game.name, game)
     BreakoutPongWeb.Endpoint.broadcast!("games:#{game.name}", "update_players", game)
-    timer = Process.send_after(self(), :move_balls, 1_000)
+    timer = Process.send_after(self(), :move_balls, 50)
     {:noreply, game}
   end
 end

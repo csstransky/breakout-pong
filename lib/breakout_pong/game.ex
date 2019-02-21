@@ -8,7 +8,7 @@ defmodule BreakoutPong.Game do
       paddleHeight: 110,
       ballRadius: 8,
       goalScoreEnemyPoints: 10,
-      goalScoreSelfPoints: -5,
+      goalScoreSelfPoints: 5,
       blockPoints: 1,
     }
   end
@@ -25,8 +25,8 @@ defmodule BreakoutPong.Game do
         paddleY: 0,
         ballX: 100,
         ballY: 100,
-        ballSpeedX: 20,
-        ballSpeedY: 20,
+        ballSpeedX: 4,
+        ballSpeedY: 4,
       },
       playerTwo: %{
         name: "",
@@ -35,8 +35,8 @@ defmodule BreakoutPong.Game do
         paddleY: 0,
         ballX: 570,
         ballY: 200,
-        ballSpeedX: 20,
-        ballSpeedY: 20,
+        ballSpeedX: -4,
+        ballSpeedY: -4,
       },
       windowHeight: 600,
       windowWidth: 800,
@@ -124,37 +124,16 @@ defmodule BreakoutPong.Game do
   end
 
   def ballHitGoal?(game) do
-    game.playerOne.ballX > game.windowWidth
-    || game.playerOne.ballX < 0
-    || game.playerTwo.ballX > game.windowWidth
-    || game.playerTwo.ballX < 0
+    game.playerOne.ballX - constants().ballRadius > game.windowWidth
+    || game.playerOne.ballX + constants().ballRadius < 0
+    || game.playerTwo.ballX - constants().ballRadius > game.windowWidth
+    || game.playerTwo.ballX + constants().ballRadius < 0
   end
 
   def move_player_ball(game, playerNum) do
-    tempBall = fn (game, playerNum) ->
-      cond do
-        playerNum == 1 ->
-          %{
-            x: game.playerOne.ballX + game.playerOne.ballSpeedX,
-            y: game.playerOne.ballY + game.playerOne.ballSpeedY,
-            speedX: game.playerOne.speedX,
-            speedY: game.playerOne.speedY,
-          }
-        playerNum == 2 ->
-          %{
-            x: game.playerTwo.ballX + game.playerTwo.ballSpeedX,
-            y: game.playerTwo.ballY + game.playerTwo.ballSpeedY,
-            speedX: game.playerTwo.speedX,
-            speedY: game.playerTwo.speedY,
-          }
-        true ->
-          "Error, how did you get here?"
-      end
-    end
-
     cond do
       ballHitFloorOrCeiling?(game, playerNum) ->
-        IO.puts "Ball hit ceiling."
+        IO.puts "Ball hit floor or ceiling."
         game
         |> bounce_off_ceiling(playerNum)
       ballHitPaddle?(game, playerNum) ->
@@ -165,40 +144,33 @@ defmodule BreakoutPong.Game do
         IO.puts "Ball hit block."
         game
       true ->
-        IO.puts "Ball is moving"
-        game = no_bounce_move(game, playerNum)
-        IO.inspect(game)
         game
+        |> no_bounce_move(playerNum)
     end
   end
 
   def no_bounce_move(game, playerNum) do
-    tempBall = get_player_ball(game, playerNum)
-    tempBall = tempBall
-    |> Map.put(:x, tempBall.x + tempBall.speedX)
-    |> Map.put(:y, tempBall.y + tempBall.speedY)
-    IO.inspect(tempBall)
+    tempBall = get_new_player_ball(game, playerNum)
     game
     |> set_new_player_ball(tempBall, playerNum)
   end
 
   def bounce_off_ceiling(game, playerNum) do
-    tempBall = get_player_ball(game, playerNum)
+    tempBall = get_new_player_ball(game, playerNum)
+    reverseSpeed = -1 * tempBall.speedY
     tempBall = tempBall
-    |> Map.put(:speedY, -1 * tempBall.speedY)
-    # TODO Change this if bad things happen to the ball
-    |> Map.put(:y, tempBall.y + 2 * tempBall.speedY)
-    |> Map.put(:x, tempBall.x + tempBall.speedX)
+    |> Map.put(:speedY, reverseSpeed)
+    |> Map.put(:y, tempBall.y + 2 * reverseSpeed)
     game
     |> set_new_player_ball(tempBall, playerNum)
   end
 
   def bounce_off_paddle(game, playerNum) do
-    tempBall = get_player_ball(game, playerNum)
+    tempBall = get_new_player_ball(game, playerNum)
+    reverseSpeed = -1 * tempBall.speedX
     tempBall = tempBall
-    |> Map.put(:speedX, -1 * tempBall.speedX)
-    |> Map.put(:x, tempBall.x + 2 * tempBall.speedX)
-    |> Map.put(:y, tempBall.y + tempBall.speedY)
+    |> Map.put(:speedX, reverseSpeed)
+    |> Map.put(:x, tempBall.x + 2 * reverseSpeed)
     game
     |> set_new_player_ball(tempBall, playerNum)
   end
@@ -212,19 +184,18 @@ defmodule BreakoutPong.Game do
   end
 
   def set_goal_score(game) do
-    game
-    |> assign_player_value(:playerOne, :score,
-         get_score(game.playerOne.score, constants().goalScoreEnemyPoints,
-           game.playerOne.ballX, game.windowWidth))
-    |> assign_player_value(:playerOne, :score,
-         get_score(game.playerOne.score, constants().goalScoreSelfPoints,
-           0, game.playerOne.ballX))
-    |> assign_player_value(:playerTwo, :score,
-         get_score(game.playerTwo.score, constants.goalScoreSelfPoints,
-           game.playerTwo.ballX, game.windowWidth))
-    |> assign_player_value(:playerTwo, :score,
-         get_score(game.playerTwo.score, constants.goalScoreEnemyPoints,
-           0, game.playerTwo.ballX))
+    game = assign_player_value(game, :playerOne, :score,
+      get_score(game.playerOne.score, constants().goalScoreEnemyPoints,
+        game.playerOne.ballX - constants().ballRadius, game.windowWidth))
+    game = assign_player_value(game, :playerTwo, :score,
+      get_score(game.playerTwo.score, constants().goalScoreSelfPoints,
+        0, game.playerOne.ballX + constants().ballRadius))
+    game = assign_player_value(game, :playerOne, :score,
+      get_score(game.playerOne.score, constants().goalScoreSelfPoints,
+        game.playerTwo.ballX - constants().ballRadius, game.windowWidth))
+    game = assign_player_value(game, :playerTwo, :score,
+      get_score(game.playerTwo.score, constants().goalScoreEnemyPoints,
+        0, game.playerTwo.ballX + constants().ballRadius))
   end
 
   def set_new_player_ball(game, tempBall, playerNum) do
@@ -246,48 +217,48 @@ defmodule BreakoutPong.Game do
     end
   end
 
-  def get_player_ball(game, playerNum) do
+  def get_new_player_ball(game, playerNum) do
     cond do
       playerNum == 1 ->
         %{
-          x: game.playerOne.ballX + game.playerOne.ballSpeedX,
-          y: game.playerOne.ballY + game.playerOne.ballSpeedY,
+          x: (game.playerOne.ballX + game.playerOne.ballSpeedX),
+          y: (game.playerOne.ballY + game.playerOne.ballSpeedY),
           speedX: game.playerOne.ballSpeedX,
           speedY: game.playerOne.ballSpeedX,
         }
       playerNum == 2 ->
-        IO.puts("WHY AREN'T YOU WORKING?")
         %{
-          x: game.playerTwo.ballX + game.playerTwo.ballSpeedX,
-          y: game.playerTwo.ballY + game.playerTwo.ballSpeedY,
+          x: (game.playerTwo.ballX + game.playerTwo.ballSpeedX),
+          y: (game.playerTwo.ballY + game.playerTwo.ballSpeedY),
           speedX: game.playerTwo.ballSpeedX,
           speedY: game.playerTwo.ballSpeedY,
         }
       true ->
-        "Error, how did you get here?"
+        IO.put "Error, how did you get here?"
     end
   end
 
   def ballHitFloorOrCeiling?(game, playerNum) do
-    ball = get_player_ball(game, playerNum)
-    ball.y > game.windowHeight || ball.y < 0
+    ball = get_new_player_ball(game, playerNum)
+    ball.y + constants().ballRadius >= game.windowHeight
+      || ball.y - constants().ballRadius <= 0
   end
 
   def ballHitPaddle?(game, playerNum) do
-    ball = get_player_ball(game, playerNum)
-
-    (ball.x < game.playerOne.paddleX + constants().paddleWidth
-      && ball.x > game.playerOne.paddleX
-      && ball.y < game.playerOne.paddleY + constants().paddleHeight
-      && ball.y > game.playerOne.paddleY)
-    || (ball.x < game.playerTwo.paddleX + constants().paddleWidth
-      && ball.x > game.playerTwo.paddleX
-      && ball.y < game.playerTwo.paddleY + constants().paddleHeight
-      && ball.y > game.playerTwo.paddleY)
+    ball = get_new_player_ball(game, playerNum)
+    buffer = 10
+    (ball.x - constants().ballRadius <= game.playerOne.paddleX + constants().paddleWidth
+      && ball.x + constants().ballRadius >= game.playerOne.paddleX - buffer
+      && ball.y <= game.playerOne.paddleY + constants().paddleHeight
+      && ball.y >= game.playerOne.paddleY)
+    || (ball.x + constants().ballRadius <= game.playerTwo.paddleX + constants().paddleWidth
+      && ball.x - constants().ballRadius >= game.playerTwo.paddleX - buffer
+      && ball.y <= game.playerTwo.paddleY + constants().paddleHeight
+      && ball.y >= game.playerTwo.paddleY)
   end
 
   def ballHitBlock?(game, playerNum) do
-    ball = get_player_ball(game, playerNum)
+    ball = get_new_player_ball(game, playerNum)
     ## TODO write this function when we get blocks working
     false
   end
