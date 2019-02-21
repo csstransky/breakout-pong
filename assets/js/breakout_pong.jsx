@@ -26,8 +26,10 @@ class BreakoutPong extends React.Component {
       lobbyList: [],
       player1: "",
       player2: "",
-      ballx: 100,
-      bally: 100,
+      ball1x: 100,
+      ball1y: 100,
+      ball2x: 200,
+      ball2y: 200,
       player1x: 10,
       player1y: 0,
       player2x: 770,
@@ -120,7 +122,7 @@ class BreakoutPong extends React.Component {
     // Ball Graphics
     ctx.fillStyle = "#06ff18";
     ctx.beginPath();
-    ctx.arc(50, 50, 8, 0, 2 * Math.PI);
+    ctx.arc(this.state.ball1x, this.state.ball1y, 8, 0, 2 * Math.PI);
     ctx.fill();
 
     return canvas;
