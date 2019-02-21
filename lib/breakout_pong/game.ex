@@ -22,7 +22,7 @@ defmodule BreakoutPong.Game do
         name: "",
         score: 0,
         paddleX: 10,
-        paddleY: 0,
+        paddleY: 5,
         ballX: 100,
         ballY: 100,
         ballSpeedX: 4,
@@ -32,7 +32,7 @@ defmodule BreakoutPong.Game do
         name: "",
         score: 0,
         paddleX: 770,
-        paddleY: 0,
+        paddleY: 5,
         ballX: 570,
         ballY: 200,
         ballSpeedX: -4,
@@ -40,6 +40,7 @@ defmodule BreakoutPong.Game do
       },
       windowHeight: 600,
       windowWidth: 800,
+      blocks: [%{}],
     }
   end
 
