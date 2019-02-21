@@ -117,6 +117,7 @@ class BreakoutPong extends React.Component {
     if (this.state.isLobby) {
       return
     }
+
     console.log("redrawing canvas")
     let canvas = this.refs.canvas;
     let ctx = canvas.getContext("2d");
@@ -181,7 +182,35 @@ class BreakoutPong extends React.Component {
       ctx.fillRect(this.state.blocks[index].x, this.state.blocks[index].y, 40, 100)
     }
 
-    //           <input type="text" id="one" onKeyDown={this.on_key.bind(this)}/>
+    // Render win screen over game, if score indicates player has won
+    if (this.state.player1score > 100 || this.state.player2score > 100) {
+
+      // Determine which player won
+      var winner;
+      if (this.state.player1score > 100) {
+        winner = this.state.player1;
+      } else {
+        winner = this.state.player2;
+      }
+
+      // Setup the background for the win screen
+      var grd = ctx.createLinearGradient(100, 100, 400, 0);
+      grd.addColorStop(0, "red");
+      grd.addColorStop(1, "white");
+      ctx.strokeRect(2, 100, 600, 400);
+      ctx.fillRect(2, 100, 600, 400);
+
+      // Setup the text for win
+      ctx.fillStyle = "#7ebaff";
+      ctx.font = "40px Courier"
+      ctx.fillText("Player " + winner + " wins!", 200, 200);
+      ctx.fillStyle = "#c2e5ff";
+      ctx.font = "30px Courier"
+      ctx.fillText("Click here to restart.", 500, 20);
+
+    }
+
+
 
     return canvas;
   }
@@ -221,8 +250,13 @@ class BreakoutPong extends React.Component {
     } else {
       return (
         <div>
-          <h4>Click below to play...</h4>
+          <h4>Click below to play.</h4>
           <canvas ref="canvas" tabIndex={-1} width={800} height={600} onKeyDown={this.on_key.bind(this)}/>
+          <h4>Rules:</h4>
+          <h5>Use the up and down (or left and right) arrow keys to move your paddle</h5>
+          <h5>Points are awarded for breaking blocks (1 pt) and scoring on your opponent (5 pts)</h5>
+          <h5>You will loose points for letting your own ball pass your own goal line</h5>
+          <h5>The first player to score 20 points will will</h5>
         </div>
       )
     }
