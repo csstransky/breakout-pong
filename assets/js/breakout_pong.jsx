@@ -22,8 +22,8 @@ class BreakoutPong extends React.Component {
     // I took most variables out of here so we can minimize the data being transported in state changes
     // We can probably add back "window size" and stuff as global, but local variables if we want
     this.state = {
-      isLobby: false,
-      lobbyList: [],
+      isLobby: true,
+      lobbyList: ["Loading lobby..."],
       player1: "",
       player2: "",
       ball1x: 100,

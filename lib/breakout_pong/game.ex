@@ -8,7 +8,7 @@ defmodule BreakoutPong.Game do
       goalScoreSelfPoints: 5,
       blockPoints: 1,
       winScore: 100,
-      speedChange: 1,
+      speedChange: 1.14,
       blockWidth: 40,
       blockHeight: 100,
     }
@@ -179,8 +179,80 @@ defmodule BreakoutPong.Game do
   end
 
   def bounce_off_block(game, playerNum) do
-    #TODO finish this for REAL TODO TODO
+    ball = get_new_player_ball(game, playerNum)
+    blockListIndex = Enum.find_index(game.blocks, fn block ->
+      block.hp > 0
+      && block.x + constants().blockWidth > ball.x + constants().ballRadius
+      && block.x < ball.x - constants().ballRadius
+      && block.y + constants().blockHeight > ball.y + constants().ballRadius
+      && block.y < ball.y - constants().ballRadius
+    end)
+    block = Enum.at(game.blocks, blockListIndex)
+    bouncedBall = bounce_off_block_new_ball(ball, block)
+    block = block
+    |> Map.put(:hp, block.hp - 1)
+      IO.inspect("LOOK HERE CIRSTINASFDKN")
+      IO.inspect(ball)
+      IO.inspect(playerNum)
+    IO.inspect(block)
+    IO.inspect(bouncedBall)
+    if block.hp <= 0 do
+      # TODO Use better math to get this working in a linear fashion
+      bouncedBall = bouncedBall
+      |> Map.put(:speedX, Kernel.round(bouncedBall.speedX * constants().speedChange))
+      |> Map.put(:speedY, Kernel.round(bouncedBall.speedY * constants().speedChange))
+      IO.inspect(bouncedBall)
+      game = game
+      |> set_block_score(playerNum)
+      |> set_new_player_ball(bouncedBall, playerNum)
+      |> Map.put(:blocks, List.insert_at(game.blocks, blockListIndex, block))
+      IO.inspect(game)
+      game
+    else
+      game
+      |> set_new_player_ball(bouncedBall, playerNum)
+      |> Map.put(:blocks, List.insert_at(game.blocks, blockListIndex, block))
+    end
+  end
+
+  def bounce_off_block_new_ball(ball, block) do
+    if bounce_off_block_top?(ball, block) do
+      reverseSpeed = -1 * ball.speedY
+      IO.inspect("I HIT THE TOP OF THE BLOCK")
+      ball
+      |> Map.put(:y, ball.y + 2 * reverseSpeed)
+      |> Map.put(:speedY, reverseSpeed)
+    else
+      reverseSpeed = -1 * ball.speedX
+      IO.inspect("I HIT THE SIDE OF THE BLOCK")
+      ball
+      |> Map.put(:x, ball.x + 2 * reverseSpeed)
+      |> Map.put(:speedX, reverseSpeed)
+    end
+  end
+
+  def bounce_off_block_top?(ball, block) do
+    # TODO Mess with these buffers until it looks right
+    sideBuffer = 4
+    topBuffer = 10
+    (ball.x <= block.x + constants().blockWidth - sideBuffer
+      && ball.x >= block.x + sideBuffer)
+    && (ball.y <= block.y + topBuffer
+        && ball.y + constants().ballRadius >= block.y)
+      || (ball.y - constants.ballRadius <= block.y + constants().blockHeight
+        && ball.y >= block.y + constants().blockHeight - topBuffer)
+  end
+
+  def increase_all_balls_speed(game) do
     game
+    |> assign_player_value(:playerOne, :ballSpeedX,
+      game.playerOne.ballSpeedX + constants().speedChange)
+    |> assign_player_value(:playerOne, :ballSpeedY,
+      game.playerOne.ballSpeedY + constants().speedChange)
+    |> assign_player_value(:playerTwo, :ballSpeedX,
+      game.playerTwo.ballSpeedX + constants().speedChange)
+    |> assign_player_value(:playerTwo, :ballSpeedY,
+      game.playerTwo.ballSpeedY + constants().speedChange)
   end
 
   def get_score(score, pointsScored, boundary1, boundary2) do
@@ -204,6 +276,19 @@ defmodule BreakoutPong.Game do
     game = assign_player_value(game, :playerTwo, :score,
       get_score(game.playerTwo.score, constants().goalScoreEnemyPoints,
         0, game.playerTwo.ballX + constants().ballRadius))
+  end
+
+  def set_block_score(game, playerNum) do
+    cond do
+      playerNum == 1 ->
+        game
+        |> assign_player_value(:playerOne, :score, game.playerOne.score + constants().blockPoints)
+      playerNum == 2 ->
+        game
+        |> assign_player_value(:playerTwo, :score, game.playerOne.score + constants().blockPoints)
+      true ->
+        IO.inspect("A ghost has scored.")
+    end
   end
 
   def set_new_player_ball(game, tempBall, playerNum) do
