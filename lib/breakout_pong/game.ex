@@ -455,6 +455,8 @@ defmodule BreakoutPong.Game do
       |> List.insert_at(-1, loser)
       # Drop lobby list into game
       game
+      |> assign_player_value(:playerOne, :score, 0)
+      |> assign_player_value(:playerTwo, :score, 0)
       |> Map.put(:lobbyList, lobby)
       # Call start game again
       start_game(game)
