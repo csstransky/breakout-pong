@@ -86,6 +86,7 @@ defmodule BreakoutPong.Game do
       player2score: game.playerTwo.score,
       windowWidth: Map.get(game, :windowWidth),
       windowHeight: Map.get(game, :windowHeight),
+      blocks: Map.get(game, :blocks),
     }
     x
   end
@@ -442,6 +443,23 @@ defmodule BreakoutPong.Game do
       true ->
         IO.inspect("cond fell through")
         game
+    end
+  end
+
+  def play_next_game(game, winner, loser) do
+    if (Kernel.length(game.lobbyList) >=1) do
+      lobby = game.lobbyList
+      # Modify lobby list appropriately
+      lobby
+      |> List.insert_at(0, winner)
+      |> List.insert_at(-1, loser)
+      # Drop lobby list into game
+      game
+      |> Map.put(:lobbyList, lobby)
+      # Call start game again
+      start_game(game)
+    else
+      start_game(game)
     end
   end
 end

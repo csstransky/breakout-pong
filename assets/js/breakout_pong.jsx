@@ -79,7 +79,6 @@ class BreakoutPong extends React.Component {
       });
 
     this.channel.on("update", resp => {
-      console.log(resp)
       this.setState(resp)
     });
   }
@@ -118,16 +117,21 @@ class BreakoutPong extends React.Component {
       return
     }
 
-    console.log("redrawing canvas")
     let canvas = this.refs.canvas;
     let ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#FFFFFF";
+    ctx.strokeStyle = "000000";
     ctx.clearRect(0, 0, this.state.windowWidth, this.state.windowHeight);
+    ctx.strokeRect(0, 0, this.state.windowWidth, this.state.windowHeight);
+    ctx.fillRect(0, 0, this.state.windowWidth, this.state.windowHeight);
+
 
     // Player Graphics
+    ctx.lineWidth = 2;
     ctx.fillStyle = "#ffba31";
     ctx.font = "20px Courier"
     ctx.fillText(this.state.player1, 100, 20);
-    ctx.fillText(this.state.player2, 500, 20);
+    ctx.fillText(this.state.player2, 600, 20);
     ctx.font = "40px Comic Sans"
     ctx.fillText(this.state.player1score, 250, 40);
     ctx.fillText(this.state.player2score, 530, 40);
@@ -160,6 +164,18 @@ class BreakoutPong extends React.Component {
     ctx.fillRect(this.state.player1x, this.state.player1y, 20, 110);
     ctx.stroke();
 
+    // Blocks rendered down here
+    var colors = ["#FFFFFF", "#aaf9ad", "#70f06e","#59dd56","#2bc52e"]
+    var lines = ["#FFFFFF", "#000000", "#000000","#000000","#000000"]
+    var index;
+    console.log(this.state.blocks);
+    for (index = 0; index < this.state.blocks.length; ++index) {
+      ctx.fillStyle = colors[this.state.blocks[index].hp];
+      ctx.strokeStyle = colors[this.state.blocks[index].hp];
+      ctx.strokeRect(this.state.blocks[index].x, this.state.blocks[index].y, 40, 100)
+      ctx.fillRect(this.state.blocks[index].x, this.state.blocks[index].y, 40, 100)
+    }
+
 
     // Ball Graphics
     ctx.fillStyle = "#002eff";
@@ -172,47 +188,61 @@ class BreakoutPong extends React.Component {
     ctx.fill();
 
 
-    // Blocks rendered down here
-    var colors = ["", "#aaf9ad", "#70f06e","#59dd56","#2bc52e"]
-    var index;
-    for (index = 0; index < this.state.blocks.length; ++index) {
-      ctx.fillStyle = colors[this.state.blocks[index].hp];
-      console.log(colors[this.state.blocks[index].hp])
-      ctx.strokeRect(this.state.blocks[index].x, this.state.blocks[index].y, 40, 100)
-      ctx.fillRect(this.state.blocks[index].x, this.state.blocks[index].y, 40, 100)
-    }
-
     // Render win screen over game, if score indicates player has won
     if (this.state.player1score > 100 || this.state.player2score > 100) {
 
       // Determine which player won
       var winner;
+      var loser
       if (this.state.player1score > 100) {
         winner = this.state.player1;
+        loser = this.state.player2;
       } else {
         winner = this.state.player2;
+        loser = this.state.player1;
       }
 
       // Setup the background for the win screen
       var grd = ctx.createLinearGradient(100, 100, 400, 0);
       grd.addColorStop(0, "red");
       grd.addColorStop(1, "white");
-      ctx.strokeRect(2, 100, 600, 400);
-      ctx.fillRect(2, 100, 600, 400);
+      ctx.strokeRect(100, 100, 600, 400);
+      ctx.fillRect(100, 100, 600, 400);
 
       // Setup the text for win
       ctx.fillStyle = "#7ebaff";
       ctx.font = "40px Courier"
-      ctx.fillText("Player " + winner + " wins!", 200, 200);
-      ctx.fillStyle = "#c2e5ff";
+      ctx.fillText(winner + " wins!", 200, 200);
       ctx.font = "30px Courier"
-      ctx.fillText("Click here to restart.", 500, 20);
-
+      ctx.fillText("(Sorry " + loser, 200, 250);
+      ctx.fillStyle = "#c2e5ff";
+      ctx.font = "20px Courier"
+      ctx.fillText("Click here to restart.", 200, 400);
     }
-
-
-
     return canvas;
+  }
+
+  player_win_restart() {
+    if (this.state.player1score > 100 || this.state.player2score > 100) {
+      // determine winner
+      var winner;
+      var loser;
+      if (this.state.player1score > 100) {
+        winner = this.state.player1;
+        loser = this.state.player2;
+      } else {
+        winner = this.state.player2;
+        loser = this.state.player1;
+      }
+
+      this.channel.push("play_next_game", {winner: winner, loser: loser})
+        .receive("ok", resp => {
+          console.log("Game has started", resp.game)
+          this.setState(resp.game);
+        });
+    } else {
+      return
+    }
   }
 
   on_key(ev) {
@@ -249,14 +279,19 @@ class BreakoutPong extends React.Component {
       );
     } else {
       return (
-        <div>
-          <h4>Click below to play.</h4>
-          <canvas ref="canvas" tabIndex={-1} width={800} height={600} onKeyDown={this.on_key.bind(this)}/>
+        <div id={"gameboard"}>
+          <h4>Click below to play!</h4>
+          <div>
+          <canvas id={"canvas"} ref="canvas" tabIndex={-1} width={800} height={600} onKeyDown={this.on_key.bind(this)} onClick={this.player_win_restart.bind(this)}/>
+          </div>
+          <div>
           <h4>Rules:</h4>
-          <h5>Use the up and down (or left and right) arrow keys to move your paddle</h5>
+          <h5>Use the left and right (or up and down) arrow keys to move your paddle</h5>
           <h5>Points are awarded for breaking blocks (1 pt) and scoring on your opponent (5 pts)</h5>
           <h5>You will loose points for letting your own ball pass your own goal line</h5>
           <h5>The first player to score 20 points will will</h5>
+          </div>
+
         </div>
       )
     }

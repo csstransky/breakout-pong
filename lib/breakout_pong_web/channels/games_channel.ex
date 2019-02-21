@@ -55,6 +55,20 @@ defmodule BreakoutPongWeb.GamesChannel do
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 
+  def handle_in("play_next_game", %{"winner" => winner, "loser" => loser}, socket) do
+    name = socket.assigns[:name]
+    game = Game.play_next_game(socket.assigns[:game], winner, loser)
+    socket = assign(socket, :game, game)
+    BackupAgent.put(name, game)
+
+    player = socket.assigns[:player]
+    update_players(name, player)
+
+    BreakoutPong.GameServer.start(name)
+    BreakoutPong.GameServer.move_balls(name)
+    {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
+  end
+
   def move_player_paddle(game, player, dist_change) do
     # This logic will have to change for more than 2 players
     cond do
