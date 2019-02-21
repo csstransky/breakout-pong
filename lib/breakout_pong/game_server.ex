@@ -2,7 +2,6 @@ defmodule BreakoutPong.GameServer do
   use GenServer
   @timedelay 100
 
-
   def reg(name) do
     {:via, Registry, {BreakoutPong.GameReg, name}}
   end
@@ -26,23 +25,10 @@ defmodule BreakoutPong.GameServer do
     GenServer.start_link(__MODULE__, game, name: reg(name))
   end
 
-  def guess(name, letter) do
-    GenServer.call(reg(name), {:guess, name, letter})
-  end
-
-  def peek(name) do
-    GenServer.call(reg(name), {:peek, name})
-  end
-
   def start_game(name) do
     GenServer.call(reg(name), {:start_game, name})
     :timer.send_interval(100, :tick)
   end
-
-  def handle_info(:tick, state) do
-    IO.inspect("ticking")
-  end
-
 
   def init(game) do
     {:ok, game}
@@ -53,13 +39,16 @@ defmodule BreakoutPong.GameServer do
   end
 
   def move_balls(name) do
-    GenServer.call(reg(name), {:move_balls, name})
+    GenServer.call(reg(name), :move_balls)
+    #:timer.send_interval(100, :tick)
+    timer = Process.send_after(self(), :move_balls, 1_000)
   end
 
-  def handle_call({:move_balls, name}, _from, game) do
+  def handle_info(:move_balls, game) do
+    name = BreakoutPong.GameReg.name
     game = BreakoutPong.BackupAgent.get(name)
-    BreakoutPong.Game.move_balls(game)
+    game = BreakoutPong.Game.move_balls(game)
     BreakoutPongWeb.Endpoint.broadcast!("games:#{name}", "update_players", game)
-    move_balls(name)
+    {:noreply, game}
   end
 end
