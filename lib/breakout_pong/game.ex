@@ -36,8 +36,8 @@ defmodule BreakoutPong.Game do
         paddleY: 5,
         ballX: 570,
         ballY: 200,
-        ballSpeedX: -4,
-        ballSpeedY: -4,
+        ballSpeedX: 0,
+        ballSpeedY: 0,
       },
       windowHeight: 600,
       windowWidth: 800,
@@ -64,6 +64,7 @@ defmodule BreakoutPong.Game do
     |> assign_player_value(:playerTwo, :ballSpeedY, new().playerTwo.ballSpeedY)
     |> assign_player_value(:playerTwo, :paddleX, new().playerTwo.paddleX)
     |> assign_player_value(:playerTwo, :paddleY, new().playerTwo.paddleY)
+    |> Map.put(:blocks, init_blocks())
   end
 
   def client_view(game) do
@@ -136,14 +137,17 @@ defmodule BreakoutPong.Game do
     cond do
       ballHitFloorOrCeiling?(game, playerNum) ->
         IO.puts "Ball hit floor or ceiling."
+        IO.inspect(playerNum)
         game
         |> bounce_off_ceiling(playerNum)
       ballHitPaddle?(game, playerNum) ->
         IO.puts "Ball hit paddle."
+        IO.inspect(playerNum)
         game
         |> bounce_off_paddle(playerNum)
       ballHitBlock?(game, playerNum) ->
         IO.puts "Ball hit block."
+        IO.inspect(playerNum)
         game
         |> bounce_off_block(playerNum)
       true ->
@@ -182,11 +186,13 @@ defmodule BreakoutPong.Game do
     ball = get_new_player_ball(game, playerNum)
     blockListIndex = Enum.find_index(game.blocks, fn block ->
       block.hp > 0
-      && block.x + constants().blockWidth > ball.x + constants().ballRadius
-      && block.x < ball.x - constants().ballRadius
-      && block.y + constants().blockHeight > ball.y + constants().ballRadius
-      && block.y < ball.y - constants().ballRadius
+      && block.x + constants().blockWidth >= ball.x + constants().ballRadius
+      && block.x <= ball.x - constants().ballRadius
+      && block.y + constants().blockHeight >= ball.y + constants().ballRadius
+      && block.y <= ball.y - constants().ballRadius
     end)
+    IO.inspect("HERE'S THAT INDEX")
+    IO.inspect(blockListIndex)
     block = Enum.at(game.blocks, blockListIndex)
     bouncedBall = bounce_off_block_new_ball(ball, block)
     block = block
@@ -205,13 +211,13 @@ defmodule BreakoutPong.Game do
       game = game
       |> set_block_score(playerNum)
       |> set_new_player_ball(bouncedBall, playerNum)
-      |> Map.put(:blocks, List.insert_at(game.blocks, blockListIndex, block))
+      |> Map.put(:blocks, List.replace_at(game.blocks, blockListIndex, block))
       IO.inspect(game)
       game
     else
       game
       |> set_new_player_ball(bouncedBall, playerNum)
-      |> Map.put(:blocks, List.insert_at(game.blocks, blockListIndex, block))
+      |> Map.put(:blocks, List.replace_at(game.blocks, blockListIndex, block))
     end
   end
 
@@ -317,7 +323,7 @@ defmodule BreakoutPong.Game do
           x: (game.playerOne.ballX + game.playerOne.ballSpeedX),
           y: (game.playerOne.ballY + game.playerOne.ballSpeedY),
           speedX: game.playerOne.ballSpeedX,
-          speedY: game.playerOne.ballSpeedX,
+          speedY: game.playerOne.ballSpeedY,
         }
       playerNum == 2 ->
         %{
@@ -354,10 +360,10 @@ defmodule BreakoutPong.Game do
     ball = get_new_player_ball(game, playerNum)
     Enum.any?(game.blocks, fn block ->
       block.hp > 0
-      && block.x + constants().blockWidth > ball.x + constants().ballRadius
-      && block.x < ball.x - constants().ballRadius
-      && block.y + constants().blockHeight > ball.y + constants().ballRadius
-      && block.y < ball.y - constants().ballRadius
+      && block.x + constants().blockWidth >= ball.x + constants().ballRadius
+      && block.x <= ball.x - constants().ballRadius
+      && block.y + constants().blockHeight >= ball.y + constants().ballRadius
+      && block.y <= ball.y - constants().ballRadius
     end)
   end
 
