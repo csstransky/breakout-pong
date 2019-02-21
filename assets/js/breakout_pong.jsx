@@ -26,6 +26,7 @@ class BreakoutPong extends React.Component {
       lobbyList: ["Loading lobby..."],
       player1: "",
       player2: "",
+      winScore: 50,
       ball1x: 100,
       ball1y: 120,
       ball2x: 700,
@@ -199,12 +200,12 @@ class BreakoutPong extends React.Component {
 
 
     // Render win screen over game, if score indicates player has won
-    if (this.state.player1score > 50 || this.state.player2score > 50) {
+    if (this.state.player1score >= this.state.winScore || this.state.player2score >= this.state.winScore) {
 
       // Determine which player won
       var winner;
       var loser
-      if (this.state.player1score > 50) {
+      if (this.state.player1score >= this.state.winScore) {
         winner = this.state.player1;
         loser = this.state.player2;
       } else {
@@ -233,11 +234,11 @@ class BreakoutPong extends React.Component {
   }
 
   player_win_restart() {
-    if (this.state.player1score > 50 || this.state.player2score > 50) {
+    if (this.state.player1score >= this.state.winScore || this.state.player2score >= this.state.winScore) {
       // determine winner
       var winner;
       var loser;
-      if (this.state.player1score > 50) {
+      if (this.state.player1score >= this.state.winScore) {
         winner = this.state.player1;
         loser = this.state.player2;
       } else {
