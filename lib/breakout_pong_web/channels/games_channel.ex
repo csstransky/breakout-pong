@@ -10,7 +10,9 @@ defmodule BreakoutPongWeb.GamesChannel do
     if authorized?(payload) do
       game = BackupAgent.get(name) || Game.new()
       player = Map.get(payload, "user")
-      game = BreakoutPong.Game.add_to_lobby(game, player)
+      game = game
+      |> BreakoutPong.Game.add_to_lobby(player)
+      |> BreakoutPong.Game.add_name(name)
       BackupAgent.put(name, game)
       update_players(name, player)
 

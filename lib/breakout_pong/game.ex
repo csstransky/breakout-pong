@@ -15,6 +15,7 @@ defmodule BreakoutPong.Game do
 
   def new do
     %{
+      name: "",
       isLobby: true,
       lobbyList: [],
       playerOne: %{
@@ -165,9 +166,20 @@ defmodule BreakoutPong.Game do
         game
       true ->
         IO.puts "Ball is moving"
+        game = no_bounce_move(game, playerNum)
+        IO.inspect(game)
         game
-        |> set_new_player_ball(get_player_ball(game, playerNum), playerNum)
     end
+  end
+
+  def no_bounce_move(game, playerNum) do
+    tempBall = get_player_ball(game, playerNum)
+    tempBall = tempBall
+    |> Map.put(:x, tempBall.x + tempBall.speedX)
+    |> Map.put(:y, tempBall.y + tempBall.speedY)
+    IO.inspect(tempBall)
+    game
+    |> set_new_player_ball(tempBall, playerNum)
   end
 
   def bounce_off_ceiling(game, playerNum) do
@@ -176,6 +188,7 @@ defmodule BreakoutPong.Game do
     |> Map.put(:speedY, -1 * tempBall.speedY)
     # TODO Change this if bad things happen to the ball
     |> Map.put(:y, tempBall.y + 2 * tempBall.speedY)
+    |> Map.put(:x, tempBall.x + tempBall.speedX)
     game
     |> set_new_player_ball(tempBall, playerNum)
   end
@@ -185,6 +198,7 @@ defmodule BreakoutPong.Game do
     tempBall = tempBall
     |> Map.put(:speedX, -1 * tempBall.speedX)
     |> Map.put(:x, tempBall.x + 2 * tempBall.speedX)
+    |> Map.put(:y, tempBall.y + tempBall.speedY)
     game
     |> set_new_player_ball(tempBall, playerNum)
   end
@@ -242,6 +256,7 @@ defmodule BreakoutPong.Game do
           speedY: game.playerOne.ballSpeedX,
         }
       playerNum == 2 ->
+        IO.puts("WHY AREN'T YOU WORKING?")
         %{
           x: game.playerTwo.ballX + game.playerTwo.ballSpeedX,
           y: game.playerTwo.ballY + game.playerTwo.ballSpeedY,
@@ -275,6 +290,11 @@ defmodule BreakoutPong.Game do
     ball = get_player_ball(game, playerNum)
     ## TODO write this function when we get blocks working
     false
+  end
+
+  # TODO Find a way to just get the damn name from the gen server
+  def add_name(game, name) do
+    game = Map.put(game, :name, name)
   end
 
   def add_to_lobby(game, playerName) do
