@@ -37,8 +37,8 @@ defmodule BreakoutPong.Game do
         paddleY: 245,
         ballX: 750,
         ballY: 300,
-        ballSpeedX: -5,
-        ballSpeedY: -5,
+        ballSpeedX: -5+5,
+        ballSpeedY: -5+5,
       },
       windowHeight: 600,
       windowWidth: 800,
@@ -172,12 +172,24 @@ defmodule BreakoutPong.Game do
 
   def bounce_off_paddle(game, playerNum) do
     tempBall = get_new_player_ball(game, playerNum)
+    paddleXPosition = get_edge_of_paddle(game, playerNum)
     reverseSpeed = -1 * tempBall.speedX
     tempBall = tempBall
     |> Map.put(:speedX, reverseSpeed)
-    |> Map.put(:x, tempBall.x + 2 * reverseSpeed)
+    |> Map.put(:x, paddleXPosition + 2 * reverseSpeed)
     game
     |> set_new_player_ball(tempBall, playerNum)
+  end
+
+  def get_edge_of_paddle(game, playerNum) do
+    cond do
+      playerNum == 1 ->
+        game.playerOne.paddleX + constants().paddleWidth
+      playerNum == 2 ->
+        game.playerTwo.paddleX 
+      true ->
+        -1
+    end
   end
 
   def bounce_off_block(game, playerNum) do
@@ -333,16 +345,16 @@ defmodule BreakoutPong.Game do
   end
 
   def ballHitPaddle?(game, playerNum) do
+    buffer = 5
     ball = get_new_player_ball(game, playerNum)
-    buffer = 10
     (ball.x - constants().ballRadius
         <= game.playerOne.paddleX + constants().paddleWidth
       && ball.x + constants().ballRadius >= game.playerOne.paddleX - buffer
       && ball.y <= game.playerOne.paddleY + constants().paddleHeight
       && ball.y >= game.playerOne.paddleY)
     || (ball.x + constants().ballRadius
-        <= game.playerTwo.paddleX + constants().paddleWidth
-      && ball.x - constants().ballRadius >= game.playerTwo.paddleX - buffer
+        <= game.playerTwo.paddleX + constants().paddleWidth + buffer
+      && ball.x - constants().ballRadius >= game.playerTwo.paddleX
       && ball.y <= game.playerTwo.paddleY + constants().paddleHeight
       && ball.y >= game.playerTwo.paddleY)
   end
