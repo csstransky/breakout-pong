@@ -1,0 +1,47 @@
+
+Web Dev Spring 2018 Project 1 Status
+
+Answer the following questions:
+
+
+1. What are the names of the members of your team?
+	Bryce DeWitt & Cristian Stransky
+
+
+2. What's the URL of the github repo with your code for this project?
+	https://github.com/csstransky/breakout-pong
+
+
+3. What's the version number of your github release?
+	v1.0
+
+
+4. What's the URL that you deployed to?
+	hw06.cstransky.me
+
+
+5. Is your app functionality complete? If not, what's missing?
+	Yes, everything is fully functional.
+
+
+6. Is your app properly deployed? If not, what went wrong?
+	Yes, everything is properly deployed to the server.
+
+
+7. What parts of the project did each team member work on?
+	We both worked on most aspects of the projects together, 
+	splitting up the larger tasks between us.  There was no clear
+	divisions of work.
+
+
+And here's a list of tasks for grading comments. Just leave this here:
+ - Development
+ - Deployment
+ - Submission
+ - Report
+   - 1
+   - 2
+   - 3
+   - 4
+   - 5
+
