@@ -1,0 +1,16 @@
+[Unit]
+Description=Breakout Pong Multiplayer Game
+
+[Service]
+Type=simple
+User=breakoutpong
+Group=breakoutpong
+Restart=on-failure
+Environment=MIX_ENV=prod "PORT=5791"
+Environment=LANG=en_US.UTF-8
+
+WorkingDirectory=/home/breakoutpong/breakout-pong
+ExecStart=/home/breakoutpong/breakout-pong/start.sh
+
+[Install]
+WantedBy=multi-user.target
