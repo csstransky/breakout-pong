@@ -25,7 +25,7 @@ defmodule BreakoutPong.Game do
         score: 0,
         paddleX: 10,
         paddleY: 245,
-        ballX: 50+700,
+        ballX: 50,
         ballY: 300,
         ballSpeedX: 5,
         ballSpeedY: 5,
@@ -266,7 +266,7 @@ defmodule BreakoutPong.Game do
     game = assign_player_value(game, :playerOne, :score,
       get_score(game.playerOne.score, constants().goalScoreSelfPoints,
         game.playerTwo.ballX - constants().ballRadius, game.windowWidth))
-    game = assign_player_value(game, :playerTwo, :score,
+    assign_player_value(game, :playerTwo, :score,
       get_score(game.playerTwo.score, constants().goalScoreEnemyPoints,
         0, game.playerTwo.ballX + constants().ballRadius))
   end
