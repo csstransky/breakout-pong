@@ -59,6 +59,17 @@ defmodule BreakoutPongWeb.GamesChannel do
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 
+  def handle_in("move_paddle", %{"paddle_move_dist" => dist_change}, socket) do
+    name = socket.assigns[:name]
+    player = socket.assigns[:player]
+    game = BackupAgent.get(name)
+    game =  move_player_paddle(game, player, dist_change)
+    BackupAgent.put(name, game)
+
+    update_players(name, player)
+    {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
+  end
+
   def move_player_paddle(game, player, dist_change) do
     # This logic will have to change for more than 2 players
     cond do
@@ -69,17 +80,6 @@ defmodule BreakoutPongWeb.GamesChannel do
       true ->
         game
     end
-  end
-
-  def handle_in("move_paddle", %{"paddle_move_dist" => dist_change}, socket) do
-    name = socket.assigns[:name]
-    player = socket.assigns[:player]
-    game = BackupAgent.get(name)
-    game =  move_player_paddle(game, player, dist_change)
-    BackupAgent.put(name, game)
-
-    update_players(name, player)
-    {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
 
   def handle_out("update_players", game, socket) do

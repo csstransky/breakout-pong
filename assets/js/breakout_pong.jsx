@@ -94,7 +94,7 @@ class BreakoutPong extends React.Component {
   }
 
   startGame() {
-    if (this.state.isLobby) {
+    if (this.state.lobbyList.length <= 1) {
       alert("You need a friend to play this game!")
     }
 
