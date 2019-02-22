@@ -17,9 +17,8 @@ defmodule BreakoutPong.GameServer do
   end
 
   def start_link(name) do
-    # Will have to change this later so it doesn't create a new game if the game
-    # exists, but the player doesn't
     game = BreakoutPong.BackupAgent.get(name) || BreakoutPong.Game.new()
+    IO.inspect(name)
     IO.inspect("genserver name above")
     GenServer.start_link(__MODULE__, game, name: reg(name))
   end
@@ -27,14 +26,6 @@ defmodule BreakoutPong.GameServer do
   def start_game(name) do
     GenServer.call(reg(name), {:start_game, name})
     :timer.send_interval(100, :tick)
-  end
-
-  def init(game) do
-    {:ok, game}
-  end
-
-  def handle_cast(:start_tick, state) do
-    IO.inspect("Genserver start tick function called")
   end
 
   def move_balls(name) do

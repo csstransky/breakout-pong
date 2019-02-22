@@ -22,10 +22,10 @@ defmodule BreakoutPong.Game do
       lobbyList: [],
       playerOne: %{
         name: "",
-        score: 49,
+        score: 0,
         paddleX: 10,
         paddleY: 245,
-        ballX: 50,
+        ballX: 50+700,
         ballY: 300,
         ballSpeedX: 5,
         ballSpeedY: 5,
@@ -70,7 +70,7 @@ defmodule BreakoutPong.Game do
   end
 
   def client_view(game) do
-    x = %{
+    %{
       isLobby: game.isLobby,
       lobbyList: game.lobbyList,
       player1: game.playerOne.name,
@@ -211,13 +211,13 @@ defmodule BreakoutPong.Game do
   def bounce_off_block_new_ball(ball, block) do
     if bounce_off_block_top?(ball, block) do
       reverseSpeed = -1 * ball.speedY
-      IO.inspect("I HIT THE TOP OF THE BLOCK")
+      IO.inspect("Bounced off top/bottom of block")
       ball
       |> Map.put(:y, ball.y + 2 * reverseSpeed)
       |> Map.put(:speedY, reverseSpeed)
     else
       reverseSpeed = -1 * ball.speedX
-      IO.inspect("I HIT THE SIDE OF THE BLOCK")
+      IO.inspect("Bounced off side of block")
       ball
       |> Map.put(:x, ball.x + 2 * reverseSpeed)
       |> Map.put(:speedX, reverseSpeed)
@@ -232,7 +232,7 @@ defmodule BreakoutPong.Game do
       && block.x + sideBuffer <= ball.x + constants().ballRadius)
     && (ball.y <= block.y + topBuffer
       && ball.y + constants().ballRadius >= block.y)
-      || (ball.y - constants.ballRadius <= block.y + constants().blockHeight
+      || (ball.y - constants().ballRadius <= block.y + constants().blockHeight
       && ball.y >= block.y + constants().blockHeight - topBuffer)
   end
 
@@ -282,7 +282,7 @@ defmodule BreakoutPong.Game do
         |> assign_player_value(:playerTwo, :score,
           game.playerTwo.score + constants().blockPoints)
       true ->
-        IO.inspect("A ghost has scored.")
+        IO.puts "A ghost has scored."
     end
   end
 
@@ -322,7 +322,7 @@ defmodule BreakoutPong.Game do
           speedY: game.playerTwo.ballSpeedY,
         }
       true ->
-        IO.put "Error, how did you get here?"
+        IO.puts "Error, how did you get here?"
     end
   end
 
@@ -394,7 +394,7 @@ defmodule BreakoutPong.Game do
   # TODO Find a way to just get the damn name from the gen server child process
   # instead of using this decorator function.
   def add_name(game, name) do
-    game = Map.put(game, :name, name)
+    Map.put(game, :name, name)
   end
 
   def add_to_lobby(game, playerName) do
@@ -437,7 +437,7 @@ defmodule BreakoutPong.Game do
         |> assign_player_value(:playerTwo, :paddleY, newPaddleY)
 
       true ->
-        IO.inspect("cond fell through")
+        IO.puts "cond fell through"
         game
     end
   end
@@ -463,13 +463,13 @@ defmodule BreakoutPong.Game do
       game
       |> add_to_lobby(game.playerTwo.name)
       |> add_to_lobby(game.playerOne.name)
-      |> reset_score_and_speed(game)
+      |> reset_score_and_speed()
       |> Map.put(:isLobby, true)
     else
       game
       |> add_to_lobby(game.playerOne.name)
       |> add_to_lobby(game.playerTwo.name)
-      |> reset_score_and_speed(game)
+      |> reset_score_and_speed()
       |> Map.put(:isLobby, true)
     end
   end

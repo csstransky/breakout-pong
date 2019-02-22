@@ -76,9 +76,6 @@ defmodule BreakoutPongWeb.GamesChannel do
     player = socket.assigns[:player]
     game = BackupAgent.get(name)
     game =  move_player_paddle(game, player, dist_change)
-    # TODO I'm not sure I actually need to use this code since we're updating
-    # everything
-    socket = assign(socket, :game, game)
     BackupAgent.put(name, game)
 
     update_players(name, player)
@@ -98,8 +95,6 @@ defmodule BreakoutPongWeb.GamesChannel do
   end
 
   def update_players(name, player) do
-    IO.puts("This player is SENDING update:")
-    IO.puts(player)
     if player do
       game = BackupAgent.get(name)
       BreakoutPongWeb.Endpoint.broadcast!("games:#{name}", "update_players", game)
