@@ -27,7 +27,6 @@ class BreakoutPong extends React.Component {
       winScore: 50,
       player1: "",
       player2: "",
-      winScore: 50,
       ball1x: 100,
       ball1y: 120,
       ball2x: 700,
@@ -107,6 +106,10 @@ class BreakoutPong extends React.Component {
   }
 
   startGame() {
+    if (this.state.isLobby) {
+      alert("You need a friend to play this game!")
+    }
+
     this.channel.push("start_game")
       .receive("ok", resp => {
         console.log("Game has started", resp.game)
@@ -122,7 +125,7 @@ class BreakoutPong extends React.Component {
     let canvas = this.refs.canvas;
     let ctx = canvas.getContext("2d");
     ctx.fillStyle = "#FFFFFF";
-    ctx.strokeStyle = "000000";
+    ctx.strokeStyle = "#000000";
     ctx.clearRect(0, 0, this.state.windowWidth, this.state.windowHeight);
     ctx.strokeRect(0, 0, this.state.windowWidth, this.state.windowHeight);
     ctx.fillRect(0, 0, this.state.windowWidth, this.state.windowHeight);
@@ -182,6 +185,8 @@ class BreakoutPong extends React.Component {
 
     // Ball Graphics
     ctx.lineWidth = 1;
+    ctx.strokeStyle = "#000000";
+
     ctx.fillStyle = "#002eff";
     ctx.beginPath();
     ctx.arc(this.state.ball2x, this.state.ball2y, 8, 0, 2 * Math.PI);
@@ -279,12 +284,12 @@ class BreakoutPong extends React.Component {
   render() {
     if (this.state.isLobby) {
       return (
-        <div className="row">
+        <div id={"lobbylist"} className="row">
           <div className="column">
             <p>Players:</p>
             <div id="playerList">
               <LobbyList lobbyList={this.state.lobbyList}/>
-              <button onClick={this.startGame.bind(this)}>Start Game</button>
+              <button id={"startButton"} onClick={this.startGame.bind(this)}>Start Game</button>
             </div>
           </div>
         </div>

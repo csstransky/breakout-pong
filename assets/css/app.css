@@ -25,7 +25,23 @@ h5 {
     background-color: #baaeb3;
 }
 
-#index-page {
-    background-color: #a4a4ba;
+#lobbylist .row, #lobbylist .column {
+    border: 1px solid #ddd;
+    padding: 8px;
+    width: 200px;
+}
+
+#lobbyList:nth-child(even){
+    background-color: #cecece;
+}
+
+#playerList {
+    padding-left: 24px;
+    text-align: left;
+}
+
+#startButton {
 
 }
+
+
