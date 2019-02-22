@@ -211,7 +211,7 @@ class BreakoutPong extends React.Component {
       ctx.fillRect(100, 100, 600, 400);
 
       // Setup the text for win
-      ctx.fillStyle = "#7ebaff";
+      ctx.fillStyle = "#4d6eac";
       ctx.font = "40px Courier"
       ctx.fillText(winner + " wins!", 200, 200);
       ctx.font = "30px Courier"
@@ -278,6 +278,7 @@ class BreakoutPong extends React.Component {
           <h5>Points are awarded for breaking blocks (1 pt) and scoring on your opponent (5 pts)</h5>
           <h5>You will loose points for letting your own ball pass your own goal line</h5>
           <h5>The first player to score 20 points will will</h5>
+
           </div>
 
         </div>
