@@ -211,7 +211,7 @@ class BreakoutPong extends React.Component {
       ctx.fillRect(100, 100, 600, 400);
 
       // Setup the text for win
-      ctx.fillStyle = "#7ebaff";
+      ctx.fillStyle = "#4d6eac";
       ctx.font = "40px Courier"
       ctx.fillText(winner + " wins!", 200, 200);
       ctx.font = "30px Courier"
