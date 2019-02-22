@@ -8,19 +8,14 @@ export default function breakout_pong_init(root, channel) {
 }
 
 // Global used for the movement of the paddle
-var PADDLE_MOVE = 80;
+let PADDLE_MOVE = 80;
 
 // Client-Side state for BreakoutPong is:
-// {
-//    TODO: add some documentation
-// }
 class BreakoutPong extends React.Component {
   constructor(props) {
     super(props);
 
     this.channel = props.channel;
-    // I took most variables out of here so we can minimize the data being transported in state changes
-    // We can probably add back "window size" and stuff as global, but local variables if we want
     this.state = {
       isLobby: true,
       lobbyList: ["Loading lobby..."],
@@ -93,16 +88,9 @@ class BreakoutPong extends React.Component {
     clearInterval(this.interval);
   }
 
-  // TODO: There's probably an issue with the got-view function not being called to update the world
   got_view(view) {
     console.log("new view");
     this.setState(view.game);
-  }
-
-  initialize_game() {
-    console.log("game restarted from browser side");
-    this.channel.push("restart")
-      .receive("ok", this.got_view.bind(this))
   }
 
   startGame() {
@@ -112,7 +100,7 @@ class BreakoutPong extends React.Component {
 
     this.channel.push("start_game")
       .receive("ok", resp => {
-        console.log("Game has started", resp.game)
+        console.log("Game has started", resp.game);
         this.setState(resp.game);
       });
   }
@@ -182,11 +170,9 @@ class BreakoutPong extends React.Component {
       ctx.fillRect(this.state.blocks[index].x, this.state.blocks[index].y, 40, 100)
     }
 
-
     // Ball Graphics
     ctx.lineWidth = 1;
     ctx.strokeStyle = "#000000";
-
     ctx.fillStyle = "#002eff";
     ctx.beginPath();
     ctx.arc(this.state.ball2x, this.state.ball2y, 8, 0, 2 * Math.PI);
@@ -203,14 +189,12 @@ class BreakoutPong extends React.Component {
     ctx.stroke();
     ctx.lineWidth = 2;
 
-
-
     // Render win screen over game, if score indicates player has won
     if (this.state.player1score >= this.state.winScore || this.state.player2score >= this.state.winScore) {
 
       // Determine which player won
       var winner;
-      var loser
+      var loser;
       if (this.state.player1score >= this.state.winScore) {
         winner = this.state.player1;
         loser = this.state.player2;
@@ -241,24 +225,11 @@ class BreakoutPong extends React.Component {
 
   player_win_restart() {
     if (this.state.player1score >= this.state.winScore || this.state.player2score >= this.state.winScore) {
-      // determine winner
-      var winner;
-      var loser;
-      if (this.state.player1score >= this.state.winScore) {
-        winner = this.state.player1;
-        loser = this.state.player2;
-      } else {
-        winner = this.state.player2;
-        loser = this.state.player1;
-      }
-
       this.channel.push("play_next_game")
         .receive("ok", resp => {
           console.log("Game has started", resp.game)
           this.setState(resp.game);
         });
-    } else {
-      return
     }
   }
 
