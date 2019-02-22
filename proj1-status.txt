@@ -13,7 +13,7 @@ Answer the following questions:
 
 
 3. What's the version number of your github release?
-	v1.0
+	v1.1
 
 
 4. What's the URL that you deployed to?
@@ -30,8 +30,9 @@ Answer the following questions:
 
 7. What parts of the project did each team member work on?
 	We both worked on most aspects of the projects together, 
-	splitting up the larger tasks between us.  There was no clear
-	divisions of work.
+	splitting up the larger tasks between us.  
+	Bryce: All Javascript, the Report, some Elixir code
+	Cristian: Most Elixir code and deployment
 
 
 And here's a list of tasks for grading comments. Just leave this here:
