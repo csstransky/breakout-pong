@@ -1,7 +1,19 @@
-# BreakoutPong
+# BreakoutPong  
+  
+A multiplyer game of Breakout and Pong combined.  
+  
+Press the up and down arrow keys to move your paddle.  
+The first to 50 points wins.  
+  
+Note: Must have two players joined into the lobby in order to play the game.  
 
-To start your Phoenix server:
+## Demo
 
+Play the game here: [hw06.cstransky.me](http://hw06.cstransky.me).
+
+### Phoenix Local Deployment
+To start your Phoenix server:  
+  
   * Install dependencies with `mix deps.get`
   * Install Node.js dependencies with `cd assets && npm install`
   * Start Phoenix endpoint with `mix phx.server`
@@ -12,9 +24,6 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   
 ### Note:
 Game originally forked from Nat Tuck's Hangman [repo](https://github.com/NatTuck/hangman-2019-01).  
-                                                                                
-## Learn more      
-
 
 ## Learn more
 
