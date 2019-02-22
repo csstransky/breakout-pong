@@ -25,3 +25,23 @@ h5 {
     background-color: #baaeb3;
 }
 
+#lobbylist .row  {
+    border: 1px solid #ddd;
+    padding: 8px;
+    width: 200px;
+    font-weight: bold;
+
+}
+
+#lobbyList .column {
+    height: 20px;
+}
+
+#lobbyList:nth-child(even){
+    background-color: #cecece;
+}
+
+#playerList {
+    padding-left: 24px;
+    text-align: left;
+}
