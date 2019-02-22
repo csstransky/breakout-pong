@@ -51,14 +51,17 @@ defmodule BreakoutPong.GameServer do
   end
 
   def handle_info(:move_balls, game) do
-    # IO.puts "LOOK EHRER"
-    # IO.inspect(Registry.lookup(__MODULE__, key))
-    # name = GenServer.whereis(self())
     game = BreakoutPong.BackupAgent.get(game.name)
     game = BreakoutPong.Game.move_balls(game)
     BreakoutPong.BackupAgent.put(game.name, game)
     BreakoutPongWeb.Endpoint.broadcast!("games:#{game.name}", "update_players", game)
     timer = Process.send_after(self(), :move_balls, 50)
-    {:noreply, game}
+
+    if BreakoutPong.Game.game_over?(game) do
+      Process.cancel_timer(timer)
+      {:noreply, game}
+    else
+      {:noreply, game}
+    end
   end
 end
