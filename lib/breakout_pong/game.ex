@@ -11,6 +11,7 @@ defmodule BreakoutPong.Game do
       speedChange: 1.14,
       blockWidth: 40,
       blockHeight: 100,
+      paddleBuffer: 80,
     }
   end
 
@@ -26,8 +27,8 @@ defmodule BreakoutPong.Game do
         paddleY: 245,
         ballX: 50,
         ballY: 300,
-        ballSpeedX: 4,
-        ballSpeedY: 4,
+        ballSpeedX: 5,
+        ballSpeedY: 5,
       },
       playerTwo: %{
         name: "",
@@ -36,8 +37,8 @@ defmodule BreakoutPong.Game do
         paddleY: 245,
         ballX: 750,
         ballY: 300,
-        ballSpeedX: -4,
-        ballSpeedY: -4,
+        ballSpeedX: -5,
+        ballSpeedY: -5,
       },
       windowHeight: 600,
       windowWidth: 800,
@@ -69,8 +70,7 @@ defmodule BreakoutPong.Game do
   end
 
   def client_view(game) do
-    x = %{
-      #TODO, this is a giant mess that will have to be fixed
+    %{
       isLobby: game.isLobby,
       lobbyList: game.lobbyList,
       player1: game.playerOne.name,
@@ -111,6 +111,7 @@ defmodule BreakoutPong.Game do
 
   def move_balls(game) do
     if ballHitGoal?(game) do
+      IO.puts "Ball scored goal."
       game
       |> set_goal_score()
       |> reset_positions()
@@ -130,8 +131,7 @@ defmodule BreakoutPong.Game do
 
   def move_player_ball(game, playerNum) do
     cond do
-      (game.playerOne.score >= game.winScore)
-      || (game.playerTwo.score >= game.winScore) ->
+      game_over?(game) ->
         game
       ballHitFloorOrCeiling?(game, playerNum) ->
         IO.puts "Ball hit floor or ceiling."
@@ -194,7 +194,6 @@ defmodule BreakoutPong.Game do
     block = block
     |> Map.put(:hp, block.hp - 1)
     if block.hp <= 0 do
-      # TODO Use better math to get this working in a linear fashion
       bouncedBall = bouncedBall
       |> Map.put(:speedX, Kernel.round(bouncedBall.speedX * constants().speedChange))
       |> Map.put(:speedY, Kernel.round(bouncedBall.speedY * constants().speedChange))
@@ -212,13 +211,13 @@ defmodule BreakoutPong.Game do
   def bounce_off_block_new_ball(ball, block) do
     if bounce_off_block_top?(ball, block) do
       reverseSpeed = -1 * ball.speedY
-      IO.inspect("I HIT THE TOP OF THE BLOCK")
+      IO.inspect("Bounced off top/bottom of block")
       ball
       |> Map.put(:y, ball.y + 2 * reverseSpeed)
       |> Map.put(:speedY, reverseSpeed)
     else
       reverseSpeed = -1 * ball.speedX
-      IO.inspect("I HIT THE SIDE OF THE BLOCK")
+      IO.inspect("Bounced off side of block")
       ball
       |> Map.put(:x, ball.x + 2 * reverseSpeed)
       |> Map.put(:speedX, reverseSpeed)
@@ -228,12 +227,13 @@ defmodule BreakoutPong.Game do
   def bounce_off_block_top?(ball, block) do
     sideBuffer = 8
     topBuffer = 10
-    (block.x + constants().blockWidth - sideBuffer >= ball.x - constants().ballRadius
-     && block.x + sideBuffer <= ball.x + constants().ballRadius)
+    (block.x + constants().blockWidth - sideBuffer
+      >= ball.x - constants().ballRadius
+      && block.x + sideBuffer <= ball.x + constants().ballRadius)
     && (ball.y <= block.y + topBuffer
-        && ball.y + constants().ballRadius >= block.y)
-      || (ball.y - constants.ballRadius <= block.y + constants().blockHeight
-        && ball.y >= block.y + constants().blockHeight - topBuffer)
+      && ball.y + constants().ballRadius >= block.y)
+      || (ball.y - constants().ballRadius <= block.y + constants().blockHeight
+      && ball.y >= block.y + constants().blockHeight - topBuffer)
   end
 
   def increase_all_balls_speed(game) do
@@ -266,7 +266,7 @@ defmodule BreakoutPong.Game do
     game = assign_player_value(game, :playerOne, :score,
       get_score(game.playerOne.score, constants().goalScoreSelfPoints,
         game.playerTwo.ballX - constants().ballRadius, game.windowWidth))
-    game = assign_player_value(game, :playerTwo, :score,
+    assign_player_value(game, :playerTwo, :score,
       get_score(game.playerTwo.score, constants().goalScoreEnemyPoints,
         0, game.playerTwo.ballX + constants().ballRadius))
   end
@@ -275,12 +275,14 @@ defmodule BreakoutPong.Game do
     cond do
       playerNum == 1 ->
         game
-        |> assign_player_value(:playerOne, :score, game.playerOne.score + constants().blockPoints)
+        |> assign_player_value(:playerOne, :score,
+          game.playerOne.score + constants().blockPoints)
       playerNum == 2 ->
         game
-        |> assign_player_value(:playerTwo, :score, game.playerTwo.score + constants().blockPoints)
+        |> assign_player_value(:playerTwo, :score,
+          game.playerTwo.score + constants().blockPoints)
       true ->
-        IO.inspect("A ghost has scored.")
+        IO.puts "A ghost has scored."
     end
   end
 
@@ -320,7 +322,7 @@ defmodule BreakoutPong.Game do
           speedY: game.playerTwo.ballSpeedY,
         }
       true ->
-        IO.put "Error, how did you get here?"
+        IO.puts "Error, how did you get here?"
     end
   end
 
@@ -333,11 +335,13 @@ defmodule BreakoutPong.Game do
   def ballHitPaddle?(game, playerNum) do
     ball = get_new_player_ball(game, playerNum)
     buffer = 10
-    (ball.x - constants().ballRadius <= game.playerOne.paddleX + constants().paddleWidth
+    (ball.x - constants().ballRadius
+        <= game.playerOne.paddleX + constants().paddleWidth
       && ball.x + constants().ballRadius >= game.playerOne.paddleX - buffer
       && ball.y <= game.playerOne.paddleY + constants().paddleHeight
       && ball.y >= game.playerOne.paddleY)
-    || (ball.x + constants().ballRadius <= game.playerTwo.paddleX + constants().paddleWidth
+    || (ball.x + constants().ballRadius
+        <= game.playerTwo.paddleX + constants().paddleWidth
       && ball.x - constants().ballRadius >= game.playerTwo.paddleX - buffer
       && ball.y <= game.playerTwo.paddleY + constants().paddleHeight
       && ball.y >= game.playerTwo.paddleY)
@@ -387,9 +391,10 @@ defmodule BreakoutPong.Game do
       %{x: 470, y: 499, hp: 1}]
   end
 
-  # TODO Find a way to just get the damn name from the gen server
+  # TODO Find a way to just get the damn name from the gen server child process
+  # instead of using this decorator function.
   def add_name(game, name) do
-    game = Map.put(game, :name, name)
+    Map.put(game, :name, name)
   end
 
   def add_to_lobby(game, playerName) do
@@ -412,45 +417,59 @@ defmodule BreakoutPong.Game do
 
   def move_paddle(game, playerNum, move_dist) do
     cond do
-      (game.playerOne.score >= game.winScore)
-      || (game.playerTwo.score >= game.winScore) ->
+      game_over?(game) ->
         game
+
       playerNum == 1
-        ## TODO Get rid of these magic numbers 60 (80 actually)
-      && (game.playerOne.paddleY + move_dist < game.windowHeight - 80)
+      && (game.playerOne.paddleY + move_dist
+        < game.windowHeight - constants().paddleBuffer)
       && (game.playerOne.paddleY + move_dist >= 0) ->
         newPaddleY = game.playerOne.paddleY + move_dist
         game
         |> assign_player_value(:playerOne, :paddleY, newPaddleY)
+
       playerNum == 2
-        ## TODO Get rid of these magic numbers 60 (80 actually)
-      && (game.playerTwo.paddleY + move_dist < game.windowHeight - 80)
+      && (game.playerTwo.paddleY + move_dist
+        < game.windowHeight - constants().paddleBuffer)
       && (game.playerTwo.paddleY + move_dist >= 0) ->
         newPaddleY = game.playerTwo.paddleY + move_dist
         game
         |> assign_player_value(:playerTwo, :paddleY, newPaddleY)
+
       true ->
-        IO.inspect("cond fell through")
+        IO.puts "cond fell through"
         game
     end
   end
 
+  def game_over?(game) do
+    game.isLobby
+    || game.playerOne.score >= game.winScore
+    || game.playerTwo.score >= game.winScore
+  end
+
+  def reset_score_and_speed(game) do
+    game
+    |> assign_player_value(:playerOne, :score, new().playerOne.score)
+    |> assign_player_value(:playerOne, :ballSpeedX, new().playerOne.ballSpeedX)
+    |> assign_player_value(:playerOne, :ballSpeedY, new().playerOne.ballSpeedY)
+    |> assign_player_value(:playerTwo, :score, new().playerTwo.score)
+    |> assign_player_value(:playerTwo, :ballSpeedX, new().playerTwo.ballSpeedX)
+    |> assign_player_value(:playerTwo, :ballSpeedY, new().playerTwo.ballSpeedY)
+  end
+
   def play_next_game(game) do
     if game.playerOne.score > game.playerTwo.score do
-      game = game
+      game
       |> add_to_lobby(game.playerTwo.name)
       |> add_to_lobby(game.playerOne.name)
-      |> assign_player_value(:playerOne, :score, new().playerOne.score)
-      |> assign_player_value(:playerTwo, :score, new().playerTwo.score)
+      |> reset_score_and_speed()
       |> Map.put(:isLobby, true)
-      IO.inspect(game)
-      game
     else
       game
       |> add_to_lobby(game.playerOne.name)
       |> add_to_lobby(game.playerTwo.name)
-      |> assign_player_value(:playerOne, :score, new().playerOne.score)
-      |> assign_player_value(:playerTwo, :score, new().playerTwo.score)
+      |> reset_score_and_speed()
       |> Map.put(:isLobby, true)
     end
   end

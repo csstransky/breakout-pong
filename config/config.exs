@@ -9,10 +9,30 @@ use Mix.Config
 
 # Configures the endpoint
 config :breakout_pong, BreakoutPongWeb.Endpoint,
-  url: [host: "localhost"],
-  secret_key_base: "TUG39sPQyh0pkbUPEg0PIDv2J0iZsUJTmkiemFU9FJUF3tJQEJir52QfTV+pjX86",
+  http: [port: {:system, "PORT"}],
+  url: [host: "hw06.cstransky.me"],
   render_errors: [view: BreakoutPongWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: BreakoutPong.PubSub, adapter: Phoenix.PubSub.PG2]
+  server: true,
+  cache_static_manifest: "priv/static/cache_manifest.json",
+  version: Application.spec(:phoenix_distillery, :vsn),
+  root: ".",
+  pubsub: [name: Memory.PubSub,
+          adapter: Phoenix.PubSub.PG2]
+
+# Create and assign secret key
+get_secret = fn name ->
+  base = Path.expand("~/.config/phx-secrets")
+  File.mkdir_p!(base)
+  path = Path.join(base, name)
+  unless File.exists?(path) do
+    secret = Base.encode16(:crypto.strong_rand_bytes(32))
+    File.write!(path, secret)
+  end
+  String.trim(File.read!(path))
+end
+
+config :breakout_pong, BreakoutPongWeb.Endpoint,
+  secret_key_base: get_secret.("key_base")
 
 # Configures Elixir's Logger
 config :logger, :console,
