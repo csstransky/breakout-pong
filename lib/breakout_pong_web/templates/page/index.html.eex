@@ -2,7 +2,7 @@
   <div class="column">
     <h1 id="index-page">Join a Breakout-Pong Game</h1>
     <p>Link back to the main domain: 
-      <a href="http://cstransky.me/">cstransky.me</a>.<br>
+      <a href="http://cstransky.com/">cstransky.com</a>.<br>
     </p>
     <%= form_for @conn, "/game", fn func -> %>
       <p>Enter game name: <%= text_input func, :gameName %></p>

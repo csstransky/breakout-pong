@@ -14,7 +14,7 @@ config :breakout_pong, BreakoutPong.Endpoint,
   root: ".",
   version: Application.spec(:phoenix_distillery, :vsn),
   http: [:inet6, port: {:system, "PORT"}],
-  url: [host: "hw06.cstransky.me", port: 5791],
+  url: [host: "hw06.cstransky.com", port: 5791],
   cache_static_manifest: "priv/static/cache_manifest.json"
  
 # Do not print debug messages in production

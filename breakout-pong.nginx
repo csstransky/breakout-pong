@@ -2,7 +2,7 @@ server {
     listen 80;
     listen [::]:80;
 
-    server_name hw06.cstransky.me;
+    server_name hw06.cstransky.com;
 
     location / {
         proxy_pass http://localhost:5791;

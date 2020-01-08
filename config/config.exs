@@ -10,7 +10,7 @@ use Mix.Config
 # Configures the endpoint
 config :breakout_pong, BreakoutPongWeb.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [host: "hw06.cstransky.me"],
+  url: [host: "hw06.cstransky.com"],
   render_errors: [view: BreakoutPongWeb.ErrorView, accepts: ~w(html json)],
   server: true,
   cache_static_manifest: "priv/static/cache_manifest.json",

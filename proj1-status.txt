@@ -17,7 +17,7 @@ Answer the following questions:
 
 
 4. What's the URL that you deployed to?
-	hw06.cstransky.me
+	hw06.cstransky.com
 
 
 5. Is your app functionality complete? If not, what's missing?

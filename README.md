@@ -9,7 +9,7 @@ Note: Must have two players joined into the lobby in order to play the game.
 
 ## Demo
 
-Play the game here: [hw06.cstransky.me](http://hw06.cstransky.me).
+Play the game here: [hw06.cstransky.com](http://hw06.cstransky.com).
 
 ### Phoenix Local Deployment
 To start your Phoenix server:  
