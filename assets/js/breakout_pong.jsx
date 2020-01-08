@@ -90,7 +90,7 @@ class BreakoutPong extends React.Component {
 
   got_view(view) {
     console.log("new view");
-    this.setState(view.game);
+    this.setState(view.gameName);
   }
 
   startGame() {
@@ -166,8 +166,8 @@ class BreakoutPong extends React.Component {
     for (index = 0; index < this.state.blocks.length; ++index) {
       ctx.fillStyle = colors[this.state.blocks[index].hp];
       ctx.strokeStyle = lines[this.state.blocks[index].hp];
-      ctx.strokeRect(this.state.blocks[index].x, this.state.blocks[index].y, 40, 100)
-      ctx.fillRect(this.state.blocks[index].x, this.state.blocks[index].y, 40, 100)
+      ctx.strokeRect(this.state.blocks[index].x, this.state.blocks[index].y, 37, 97)
+      ctx.fillRect(this.state.blocks[index].x, this.state.blocks[index].y, 37, 97)
     }
 
     // Ball Graphics
